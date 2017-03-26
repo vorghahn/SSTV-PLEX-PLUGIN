@@ -1,0 +1,85 @@
+[
+	{
+		"id": "serverLocation",
+		"type": "enum",
+		"label": "Select Server Location (NA/EU/Asia)",
+		"values": ["None", "EU Random","EU DE-Frankfurt","EU NL-EVO","EU NL-i3d","EU UK-London","EU UK-London1","EU UK-London2","US All","US East","US West","US East-NJ","US East-VA","US East-CAN","US East-CAN2","Asia"],
+		"default": "None"
+	},
+	{
+		"id": "username",
+		"type": "text",
+		"label": "User Name",
+		"default": ""
+	},
+	{
+		"id": "password",
+		"type": "text",
+		"option": "hidden",
+		"label": "Password",
+		"default": ""
+	},
+	{
+		"id": "service",
+		"type": "enum",
+		"label": "Service",
+		"values": ["None","MyStreams","Live247","StarStreams","StreamTVNow"],
+		"default": "None"
+	},
+	{
+		"id": "mySearch",
+		"type": "text",
+		"label": " My Search",
+		"default": "NFL;NHL;NBA;WorldFootball;NOW BEST"
+	},
+	{
+		"id": "hdOnly",
+		"type": "enum",
+		"label": "Stream Quality Preference",
+		"values": ["Both","SD only","HD only"],
+		"default": "SD only"
+	},
+	{
+		"id": "sourcetype",
+		"type": "enum",
+		"label": "HLS or RTMP",
+		"values": ["HLS","RTMP"],
+		"default": "HLS"
+	},
+	{
+		"id": "sportsOnly",
+		"type": "bool",
+		"label": "Sports Only? (Only show sports guide)",
+		"default": "True"
+	},
+	{
+		"id": "channelDetails",
+		"type": "bool",
+		"label": "Extra Detail? (Adds Extra Detail Before Playing Stream)",
+		"default": "False"
+	},
+	{
+		"id": "showThumbs",
+		"type": "bool",
+		"label": "Show Thumbnails? (Disable to improve Android Experience)",
+		"default": "True"
+	},
+	{
+		"id": "pageCount",
+		"type": "text",
+		"label": "Items Per Page",
+		"default": "50"
+	},
+	{
+		"id": "numChannels",
+		"type": "text",
+		"label": "Number of Channels",
+		"default": "120"
+	},
+	{
+		"id": "customServer",
+		"type": "text",
+		"label": "Custom Server",
+		"default": ""
+	}
+]

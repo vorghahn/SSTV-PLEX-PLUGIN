@@ -53,6 +53,16 @@ def GetDateTimeNative(strTime):
 	except:
 		Log.Error("GetDateTimeNative " + strTime)
 
+def IsDST():
+    dt = datetime.datetime.utcnow()
+    if dt.year < 2007:
+        raise ValueError()
+    dst_start = datetime.datetime(dt.year, 3, 8, 2, 0)
+    dst_start += datetime.timedelta(6 - dst_start.weekday())
+    dst_end = datetime.datetime(dt.year, 11, 1, 2, 0)
+    dst_end += datetime.timedelta(6 - dst_end.weekday())
+    return dst_start <= dt < dst_end
+
 def IsScheduleInDst():
 	#In the northern parts of the time zone, during the second Sunday in March, at 2:00 a.m. EST, clocks are advanced to 3:00 a.m. EDT
 	# leaving a one hour "gap". During the first Sunday in November, at 2:00 a.m. EDT, clocks are moved back to 1:00 a.m. EST, thus "duplicating" one hour.
@@ -108,7 +118,7 @@ def GetServerUrlByName(serverLocation=None):
 
 def GetServicePort(serviceName=None):
 	# Gets the port for HTML5 streaming
-	
+
 	if serviceName is None:
 		Log.Error('No serviceName specified')
 		port = "80" # this will at least let ss server op log it if debugging on that end
@@ -130,20 +140,13 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 		return
 
 	Log.Info('Starting GetScheduleJson')
-	is_dst = time.daylight and time.localtime().tm_isdst > 0
-	utc_offset = - (time.altzone if is_dst else time.timezone)
 
 	currentTime = getCurrentTimeNative()
 
-	result = HTML.ElementFromURL('http://www.timeanddate.com/time/zones/est')
-	ScheduleUtcOffset = -5 # EDT = UTC - 5
-	divs = result.cssselect('div')
-	for i in divs:
-		if i.text_content().find('(Daylight Savings') >= 0:
-			Log.Info('schedule has DST ' + i.text_content())
-			ScheduleUtcOffset = -4 # EST = UTC - 4
-
-	Dict['ScheduleUtcOffset'] = ScheduleUtcOffset
+	if IsDST():
+		Dict['ScheduleUtcOffset'] = -4
+	else:
+		Dict['ScheduleUtcOffset'] = -5
 
 	parser = dateutil.parser()
 	if Prefs['sportsOnly']:

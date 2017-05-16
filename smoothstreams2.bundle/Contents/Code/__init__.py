@@ -185,51 +185,38 @@ def SearchShows(query):
 	lastShow = ""
 	for show in showsList:
 		channelNum = str(show['channel'])
-		channelItem = channelsDict[channelNum]
+		channelItem = channelsDict[str(channelNum)]
 		channelName = channelItem.name.replace("720P", "HD")
 		titleText = formatShowText(channelItem, show, currentTime, "{when} {title} {qual} {lang} {time} ({cat}) {chname} #{ch}")
 		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
-		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = False)
+		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = False)
+		showCount += 1
 
 		if not bestOnly or lastShow != show['time'] + show['name']:
 			if Prefs['channelDetails']:
-				oc.add(DirectoryObject(key = Callback(PlayMenu,
-					url = channelUrl,
-					channelNum = channelNum),
-					title = SmoothUtils.fix_text(titleText),
-					tagline = SmoothUtils.fix_text(show['description']),
-					summary = "",
-					studio = channelName,
-					quotes = "",
-					thumb = thumb))
+				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = titleText, tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
 			elif SmoothUtils.GetDateTimeNative(show['time']) < currentTime:
-				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
+				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 				oc.add(VideoClipObject(
 					key = Callback(CreateVideoClipObject,
 						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
 						title = SmoothUtils.fix_text(titleText),
 						tagline = SmoothUtils.fix_text(show['description']),
 						summary = "",
-						studio = channelName,
-						quotes = "",
 						thumb = thumbV,
-						art = thumbV,
 						container = True),
 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
-					studio = channelName,
-					quotes = "",
 					thumb = thumbV,
-					art = thumbV,
 					items = [
 						MediaObject(
 							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
 							optimized_for_streaming = True
 						)
 					]
-				))
+					))
 			else:
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 				oc.add(CreateVideoClipObject(
@@ -241,8 +228,8 @@ def SearchShows(query):
 				))
 		lastShow = show['time'] + show['name']
 
-		showCount += 1
 		if showCount == 100:
+			Log.Info('MAX SHOWS REACHED')
 			break
 
 	return oc

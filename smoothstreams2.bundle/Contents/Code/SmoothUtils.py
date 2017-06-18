@@ -254,7 +254,7 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 	Log.Info('Saved GetScheduleJson results')
 
 def GetFullUrlFromChannelNumber(channelNum, checkQuality = False):
-	source = Prefs['sourcetype']
+
 	if checkQuality:
 		return GetChannelUrlByQuality(channelNum, True)
 	

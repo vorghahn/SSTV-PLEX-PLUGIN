@@ -24,7 +24,7 @@ Smoothstreams_URL1 = 'http://a.video.Smoothstreams.com/'
 BASE_URL = 'http://www.Smoothstreams.com/videos'
 
 MIN_CHAN = 1 # probably a given
-MAX_CHAN = 120 # changed this to a preference 
+MAX_CHAN = 120 # changed this to a preference
 
 VIDEO_PREFIX = ''
 NAME = 'Smoothstreams'
@@ -38,7 +38,6 @@ ICON = 'icon-default.png'
 
 def Start():
 	getLatestVersion()
-
 	Log.Info("***{0} starting Python Version {1} TimeZone {2} PluginVersion {3}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION))
 	loginResult = SmoothAuth.login()
 	scheduleResult = SmoothUtils.GetScheduleJson()
@@ -51,6 +50,30 @@ def Start():
 		ObjectContainer.art = R(ART)
 		DirectoryObject.thumb = R("Smoothstreams-network.png")
 		HTTP.Headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:22.0) Gecko/20100101 Firefox/22.0'
+
+####################################################################################################
+
+def sourceType():
+	#Standard default setting
+	source = Prefs['sourcetype']
+	#Client videotype overide
+	hlsClients = []
+	rtmpClients = []
+	if not Prefs['hlsClient'] is None and len(Prefs['hlsClient']) > 2:
+		for client in Prefs['hlsClient'].split(";"):
+			hlsClients.append(client)
+	if not Prefs['rtmpClient'] is None and len(Prefs['rtmpClient']) > 2:
+		for client in Prefs['rtmpClient'].split(";"):
+			rtmpClients.append(client)
+	if str(Client.Platform) in hlsClients:
+		source = "HLS"
+		Log.Debug('Forcing HLS stream based on detected platform ' + str(Client.Platform))
+	elif str(Client.Platform) in rtmpClients:
+		source = "RTMP"
+		Log.Debug('Forcing RTMP stream based on detected platform ' + str(Client.Platform))
+	else:
+		Log.Debug('Using user settings for client: ' + str(Client.Platform))
+
 
 ###################################################################################################
 
@@ -69,6 +92,7 @@ def VideoMainMenu():
 	Log.Info(PLUGIN_VERSION + ' VideoMainMenu called: ')
 	MAX_CHAN = int(Prefs['numChannels'])
 	oc = ObjectContainer()
+	sourceType()
 
 	if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 		updateAvailable = " - plugin update available"
@@ -105,7 +129,7 @@ def VideoMainMenu():
 
 		# Preferences
 		oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
-			
+
 	return oc
 ###################################################################################################
 
@@ -185,51 +209,38 @@ def SearchShows(query):
 	lastShow = ""
 	for show in showsList:
 		channelNum = str(show['channel'])
-		channelItem = channelsDict[channelNum]
+		channelItem = channelsDict[str(channelNum)]
 		channelName = channelItem.name.replace("720P", "HD")
 		titleText = formatShowText(channelItem, show, currentTime, "{when} {title} {qual} {lang} {time} ({cat}) {chname} #{ch}")
 		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
-		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = False)
+		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = False)
+		showCount += 1
 
 		if not bestOnly or lastShow != show['time'] + show['name']:
 			if Prefs['channelDetails']:
-				oc.add(DirectoryObject(key = Callback(PlayMenu,
-					url = channelUrl,
-					channelNum = channelNum),
-					title = SmoothUtils.fix_text(titleText),
-					tagline = SmoothUtils.fix_text(show['description']),
-					summary = "",
-					studio = channelName,
-					quotes = "",
-					thumb = thumb))
+				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = titleText, tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
 			elif SmoothUtils.GetDateTimeNative(show['time']) < currentTime:
-				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
+				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 				oc.add(VideoClipObject(
 					key = Callback(CreateVideoClipObject,
 						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
 						title = SmoothUtils.fix_text(titleText),
 						tagline = SmoothUtils.fix_text(show['description']),
 						summary = "",
-						studio = channelName,
-						quotes = "",
 						thumb = thumbV,
-						art = thumbV,
 						container = True),
 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
-					studio = channelName,
-					quotes = "",
 					thumb = thumbV,
-					art = thumbV,
 					items = [
 						MediaObject(
 							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
 							optimized_for_streaming = True
 						)
 					]
-				))
+					))
 			else:
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 				oc.add(CreateVideoClipObject(
@@ -241,8 +252,8 @@ def SearchShows(query):
 				))
 		lastShow = show['time'] + show['name']
 
-		showCount += 1
 		if showCount == 100:
+			Log.Info('MAX SHOWS REACHED')
 			break
 
 	return oc
@@ -262,7 +273,7 @@ def ChannelsMenu(url = None):
 			break
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
-	
+
 	for channelNum in range(1, MAX_CHAN + 1):
 		if not channelsDict is None and str(channelNum) in channelsDict:
 			channelItem = channelsDict[str(channelNum)]
@@ -342,7 +353,7 @@ def LiveMenu(url = None):
 			break
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
-	
+
 	showsList = [i for i in showsListAll if SmoothUtils.GetDateTimeNative(i['time']) <= currentTime and SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime and ((Prefs['hdOnly'] == "SD only" and not (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or (Prefs['hdOnly'] == "HD only" and (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or Prefs['hdOnly'] == "Both")]
 	showsList.sort(key = lambda x: (x['category'], x['name'], x['quality'], x['time']))
 
@@ -402,7 +413,7 @@ def CategoriesMenu():
 	channelsDict = Dict['channelsDict']
 	categoryDict = Dict['categoryDict']
 	channelText = ''
-	
+
 	for i in range(1, 5):
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
@@ -412,7 +423,7 @@ def CategoriesMenu():
 	for category in sorted(categoryDict):
 		thumb = SmoothUtils.GetChannelThumb(category = category, large = False)
 		oc.add(DirectoryObject(key = Callback(CategoryMenu, url = category), title = category, thumb = thumb))
-	
+
 	return oc
 #################################################################################################
 @route(PREFIX + '/category')
@@ -432,13 +443,13 @@ def CategoryMenu(url = None):
 			break
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
-	
+
 	# filter and sort the shows for the category by start time
 	if url in categoryDict:
 		showsList = sorted([i for i in categoryDict[url] if SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime and ((Prefs['hdOnly'] == "SD only" and not (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or (Prefs['hdOnly'] == "HD only" and (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or Prefs['hdOnly'] == "Both")], key = lambda x: (x['time'], x['name'], x['quality']))
 	else:
 		showsList = []
-	
+
 	showCount = 0
 	for show in showsList:
 		showCount += 1
@@ -501,7 +512,7 @@ def ScheduleListMenu(startIndex = 0):
 	channelsDict = Dict['channelsDict']
 	showsList = Dict['showsList']
 	channelText = ''
-	
+
 	for i in range(1, 5):
 		if not channelsDict is None and not showsList is None:
 			break
@@ -516,11 +527,11 @@ def ScheduleListMenu(startIndex = 0):
 
 	if endIndex > len(showsList):
 		endIndex = len(showsList)
-	
+
 	for i in range(int(startIndex), int(endIndex)):
 		show = showsList[i]
 		channelSeparator = ' - '
-		
+
 		if SmoothUtils.GetDateTimeNative(show['end_time']) <= currentTime:
 			channelSeparator = ' * '
 		channelItem = None
@@ -543,7 +554,7 @@ def ScheduleListMenu(startIndex = 0):
 			channelText = '%02d {0} ' % (channelNum, channelSeparator)
 			channelText = formatShowText(channelItem, show, currentTime, "")
 
-		# CHECK PREFS for Scheduled Channel Details 
+		# CHECK PREFS for Scheduled Channel Details
 		if Prefs['channelDetails']:
 			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = False)
 		 	oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(channelText), tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
@@ -641,7 +652,7 @@ def PlayMenu(url = None, channelNum = None):
 				))
 
 			addedItems = True
-	
+
 	if not addedItems:
 		oc.title1 = title
 		oc.add(CreateVideoClipObject(
@@ -789,18 +800,18 @@ def formatShowText(channel, show, currentTime, formatString):
 			show["name"] = show["name"].replace(show["category"] + ":", "").strip()
 
 		retVal = formatString.replace("{ch}", channel.channel_id).replace("{chname}", chanName).replace("{title}", show['name']).replace("{qual}", show["quality"].replace("hqlq", "").replace("unk", "")).replace("{time}", SmoothUtils.GetShowTimeText(show)).replace("{lang}", language).replace("{when}", when).replace("{cat}", show['category'])
-	
+
 	return retVal.replace("()", "").replace("  ", " ").strip()
 
 def getLatestVersion():
 	try:
 		global PLUGIN_VERSION
 		global PLUGIN_VERSION_LATEST
-		
+
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '1' #Resource.Load("version.txt", binary = False)
-		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/stankness/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '1' #str(JSON.ObjectFromURL("https://bitbucket.org/stankness/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION =  '20170618' #Resource.Load("version.txt", binary = False)
+		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
+		PLUGIN_VERSION_LATEST =  '20170618' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghan/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

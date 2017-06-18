@@ -47,6 +47,18 @@
 		"default": "HLS"
 	},
 	{
+		"id": "hlsClient",
+		"type": "text",
+		"label": "If client requires HLS streams to operate enter add it here",
+		"default": "tvOS"
+	},
+	{
+		"id": "rtmpClient",
+		"type": "text",
+		"label": "If client requires RTMP streams to operate enter add it here",
+		"default": "Konvergo"
+	},
+	{
 		"id": "sportsOnly",
 		"type": "bool",
 		"label": "Sports Only? (Only show sports guide)",

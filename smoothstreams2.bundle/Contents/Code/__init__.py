@@ -84,7 +84,8 @@ def ValidatePrefs():
 	Log.Info("***{0} ValidatePrefs Python Version {1} TimeZone {2} PluginVersion {3}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION))
 	# Do we need to reset the extentions?
 	loginResult = SmoothAuth.login()
-	scheduleResult = SmoothUtils.GetScheduleJson()
+	if Prefs['simple'] != 'Yes (No EPG)':
+		scheduleResult = SmoothUtils.GetScheduleJson()
 	Log.Info(repr(loginResult))
 	return loginResult
 

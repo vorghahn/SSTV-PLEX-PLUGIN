@@ -150,11 +150,11 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 
 	parser = dateutil.parser()
 	if Prefs['sportsOnly']:
-		scheduleFeedURL = 'https://iptvguide.netlify.com/iptv.json'
+		scheduleFeedURL = 'http://iptvguide.netlify.com/iptv.json'
 		Dict['currentGuide'] = "Sports"
 		cacheSeconds = 1800 # cache for 30 minutes
 	else:
-		scheduleFeedURL = 'https://iptvguide.netlify.com/tv.json'
+		scheduleFeedURL = 'http://iptvguide.netlify.com/tv.json'
 		Dict['currentGuide'] = "All"
 		cacheSeconds = 21600 # cache for 6 hours because this guide is not updated often
 

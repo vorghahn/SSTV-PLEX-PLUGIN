@@ -37,7 +37,7 @@
 		"id": "mySearch",
 		"type": "text",
 		"label": " My Search",
-		"default": "NFL;NHL;NBA;WorldFootball;NOW BEST"
+		"default": "NFL;NHL;NBA;WorldFootball"
 	},
 	{
 		"id": "hdOnly",

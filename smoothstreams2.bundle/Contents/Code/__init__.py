@@ -949,9 +949,9 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '20170621' #Resource.Load("version.txt", binary = False)
+		PLUGIN_VERSION =  '20170624' #Resource.Load("version.txt", binary = False)
 		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '20170621' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST =  '20170624' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

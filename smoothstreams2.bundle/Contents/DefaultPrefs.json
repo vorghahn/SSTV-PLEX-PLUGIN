@@ -27,6 +27,13 @@
 		"default": "None"
 	},
 	{
+		"id": "simple",
+		"type": "enum",
+		"label": "Simple (Channel List Only",
+		"values": ["No","Yes","Yes (No EPG)"],
+		"default": "No"
+	},
+	{
 		"id": "mySearch",
 		"type": "text",
 		"label": " My Search",
@@ -45,6 +52,18 @@
 		"label": "HLS or RTMP",
 		"values": ["HLS","RTMP"],
 		"default": "HLS"
+	},
+	{
+		"id": "hlsClient",
+		"type": "text",
+		"label": "If client requires HLS streams to operate enter add it here",
+		"default": "tvOS"
+	},
+	{
+		"id": "rtmpClient",
+		"type": "text",
+		"label": "If client requires RTMP streams to operate enter add it here",
+		"default": "Konvergo"
 	},
 	{
 		"id": "sportsOnly",

@@ -137,7 +137,7 @@ def VideoMainMenu():
 
 @route(PREFIX + '/searchShows')
 def SearchShows(query):
-        source = sourceType()
+    source = sourceType()
 	channelsDict = Dict['channelsDict']
 	showsListAll = Dict['showsList']
 	oc = ObjectContainer(title2 = "Search Results for {0}".format(query))
@@ -264,8 +264,8 @@ def SearchShows(query):
 ###################################################################################################
 @route(PREFIX + '/channels')
 def ChannelsMenu(url = None):
-        source = sourceType()
-        Log.Debug('Channels menu: Source is ' + str(source))
+    source = sourceType()
+    Log.Debug('Channels menu: Source is ' + str(source))
 	oc = ObjectContainer(title2 = "Channels")
 	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
 	channelsDict = Dict['channelsDict']
@@ -347,7 +347,7 @@ def ChannelsMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/live')
 def LiveMenu(url = None):
-        source = sourceType()
+    source = sourceType()
 	oc = ObjectContainer(title2 = "Live")
 	Log.Info(PLUGIN_VERSION + ' LiveMenu')
 	channelsDict = Dict['channelsDict']
@@ -413,7 +413,7 @@ def LiveMenu(url = None):
 #################################################################################################
 @route(PREFIX + '/categories')
 def CategoriesMenu():
-        source = sourceType()
+    source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoriesMenu")
 	oc = ObjectContainer(title2 = "Categories")
 	Log.Info('Categories')
@@ -435,7 +435,7 @@ def CategoriesMenu():
 #################################################################################################
 @route(PREFIX + '/category')
 def CategoryMenu(url = None):
-        source = sourceType()
+    source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoryMenu " + url)
 	if url is None:
 		oc = ObjectContainer(title2 = "Categories")
@@ -512,7 +512,7 @@ def CategoryMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/channels/schedulelist')
 def ScheduleListMenu(startIndex = 0):
-        source = sourceType()
+    source = sourceType()
 	pageCount = int(Prefs['pageCount'])
 	endIndex = int(startIndex) + pageCount
 
@@ -601,7 +601,7 @@ def ScheduleListMenu(startIndex = 0):
 #################################################################################################
 @route(PREFIX + '/channels/playmenu')
 def PlayMenu(url = None, channelNum = None):
-        source = sourceType()
+    source = sourceType()
 	### This is the detailed PLAY menu after a channel has been selected which shows NOW PLAYING, and then the shows that will be on later
 	Log.Info(PLUGIN_VERSION + ' PlayMenu with Url ' + url)
 	oc = ObjectContainer(title1 = 'Channel ' + channelNum)

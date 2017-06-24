@@ -225,42 +225,42 @@ def SimpleStreamsNoEPG(url = None):
 	channelText = ''
 	currentTime = SmoothUtils.getCurrentTimeNative()
 
-	for i in range(1, 5):
-		if not channelsDict is None:
-			break
-		Log.Info('sleeping 500ms for async schedule details to return')
-		Thread.Sleep(0.5)
+	# for i in range(1, 5):
+	# 	if not channelsDict is None:
+	# 		break
+	# 	Log.Info('sleeping 500ms for async schedule details to return')
+	# 	Thread.Sleep(0.5)
 
 	for channelNum in range(1, MAX_CHAN + 1):
-		if not channelsDict is None and str(channelNum) in channelsDict:
-			summaryText = ""
+		# if not channelsDict is None and str(channelNum) in channelsDict:
+		summaryText = ""
 
-			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = False) #, chanFirst = True
-			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = True) #, chanFirst = True
-			oc.add(VideoClipObject(
-				key = Callback(CreateVideoClipObject,
-					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
-					title = channelNum,
-					tagline = "",
-					summary = "",
-					thumb = thumbV,
-					studio = "",
-					quotes = "",
-					container = True),
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
+		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = False) #, chanFirst = True
+		thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = True) #, chanFirst = True
+		oc.add(VideoClipObject(
+			key = Callback(CreateVideoClipObject,
+				url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 				title = channelNum,
 				tagline = "",
 				summary = "",
-				studio = channelNum,
-				quotes = "",
 				thumb = thumbV,
-				items = [
-					MediaObject(
-						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
-						optimized_for_streaming = True
-					)
-				]
-				))
+				studio = "",
+				quotes = "",
+				container = True),
+			url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
+			title = channelNum,
+			tagline = "",
+			summary = "",
+			studio = channelNum,
+			quotes = "",
+			thumb = thumbV,
+			items = [
+				MediaObject(
+					parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
+					optimized_for_streaming = True
+				)
+			]
+			))
 	return oc
 
 ###################################################################################################
@@ -950,9 +950,9 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '20170624' #Resource.Load("version.txt", binary = False)
+		PLUGIN_VERSION =  '20170625dev' #Resource.Load("version.txt", binary = False)
 		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '20170624' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST =  '20170625dev' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

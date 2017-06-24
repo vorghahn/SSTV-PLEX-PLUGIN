@@ -254,7 +254,7 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 	Log.Info('Saved GetScheduleJson results')
 
 def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
-        #Log.Debug('HELP,Source is ' + str(source))
+    #Log.Debug('HELP,Source is ' + str(source))
 	if checkQuality:
 		return GetChannelUrlByQuality(channelNum, True)
 	
@@ -265,19 +265,19 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 		server = GetServerUrlByName(Prefs["serverLocation"])
 		servicePort = GetServicePort(Prefs['service'])
 	if source == "HLS":
-                try:
-                        channelUrl = 'http://%s:%s/%s/ch%sq1.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), Dict['SPassW'])
-                except:
-                        servicePort = 3625
-                        channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq1.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum))
+		try:
+				channelUrl = 'http://%s:%s/%s/ch%sq1.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), Dict['SPassW'])
+		except:
+				servicePort = 3625
+				channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq1.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum))
 	
 	else:
-                try:
-                        servicePort = 3625
-                        channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq1.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum))
-                except:
-                        channelUrl = 'http://%s:%s/%s/ch%sq1.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), Dict['SPassW'])
-                        servicePort = GetServicePort(Prefs['service'])
+		try:
+				servicePort = 3625
+				channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq1.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum))
+		except:
+				channelUrl = 'http://%s:%s/%s/ch%sq1.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), Dict['SPassW'])
+				servicePort = GetServicePort(Prefs['service'])
 	return channelUrl
 
 def GetChannelSummaryText(channelInfo=None):

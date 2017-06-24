@@ -27,6 +27,13 @@
 		"default": "None"
 	},
 	{
+		"id": "simple",
+		"type": "enum",
+		"label": "Simple (Channel List Only",
+		"values": ["No","Yes","Yes (No EPG)"],
+		"default": "No"
+	},
+	{
 		"id": "mySearch",
 		"type": "text",
 		"label": " My Search",

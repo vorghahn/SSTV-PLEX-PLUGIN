@@ -74,8 +74,8 @@ def sourceType():
 		Log.Debug('Forcing RTMP stream based on detected platform ' + str(Client.Platform))
 	else:
 		Log.Debug('Using user settings for client: ' + str(Client.Platform))
-        Log.Debug('Source is ' + str(source))
-        return source
+		Log.Debug('Source is ' + str(source))
+	return source
 
 ###################################################################################################
 
@@ -101,43 +101,172 @@ def VideoMainMenu():
 	else:
 		updateAvailable = ""
 
-	if (Dict['currentGuide'] == "Sports" and Prefs['sportsOnly']) or (Dict['currentGuide'] == "All" and not Prefs['sportsOnly']):
-		scheduleResult = SmoothUtils.GetScheduleJson()
 
-	if Dict['SPassW'] is None or Prefs['serverLocation'] is None or Prefs['username'] is None or Prefs['service'] is None:
-		Log.Info('No password yet')
-		ObjectContainer.title1 = NAME + updateAvailable + ' - Enter Login Details and Server Preferences then Refresh ->'
-		oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
+	if Prefs['simple'] == 'Yes':
+		return SimpleStreams()
+	elif Prefs['simple'] == 'Yes (No EPG)':
+		return SimpleStreamsNoEPG()
 	else:
-		ObjectContainer.title1 = NAME + updateAvailable
-		oc.add(DirectoryObject(key = Callback(LiveMenu), title = "Live", thumb = SmoothUtils.GetChannelThumb(chanName = "Live"), summary = "Live shows"))
-		oc.add(DirectoryObject(key = Callback(ChannelsMenu), title = "Channels", thumb = SmoothUtils.GetChannelThumb(chanName = "Channels"), summary = "Channel List"))
-		oc.add(DirectoryObject(key = Callback(CategoriesMenu), title = "Categories", thumb = SmoothUtils.GetChannelThumb(chanName = "Categories"), summary = "Category List"))
-		oc.add(DirectoryObject(key = Callback(ScheduleListMenu), title = "Schedule", thumb = SmoothUtils.GetChannelThumb(chanName = "Schedule"), summary = "Schedule List"))
+		if (Dict['currentGuide'] == "Sports" and Prefs['sportsOnly']) or (Dict['currentGuide'] == "All" and not Prefs['sportsOnly']):
+			scheduleResult = SmoothUtils.GetScheduleJson()
+		if Dict['SPassW'] is None or Prefs['serverLocation'] is None or Prefs['username'] is None or Prefs['service'] is None:
+			Log.Info('No password yet')
+			ObjectContainer.title1 = NAME + updateAvailable + ' - Enter Login Details and Server Preferences then Refresh ->'
+			oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
+		else:
+			ObjectContainer.title1 = NAME + updateAvailable
+			oc.add(DirectoryObject(key = Callback(LiveMenu), title = "Live", thumb = SmoothUtils.GetChannelThumb(chanName = "Live"), summary = "Live shows"))
+			oc.add(DirectoryObject(key = Callback(ChannelsMenu), title = "Channels", thumb = SmoothUtils.GetChannelThumb(chanName = "Channels"), summary = "Channel List"))
+			oc.add(DirectoryObject(key = Callback(CategoriesMenu), title = "Categories", thumb = SmoothUtils.GetChannelThumb(chanName = "Categories"), summary = "Category List"))
+			oc.add(DirectoryObject(key = Callback(ScheduleListMenu), title = "Schedule", thumb = SmoothUtils.GetChannelThumb(chanName = "Schedule"), summary = "Schedule List"))
 
-		# TODO: add custom categories
-		if not Prefs['mySearch'] is None and len(Prefs['mySearch']) > 2:
-			for mySearch in Prefs['mySearch'].split(";"):
-				if ":" in mySearch:
-					title = mySearch.split(":")[0].strip()
-					searchString = mySearch.split(":")[1].strip()
-				else:
-					title = mySearch
-					searchString = mySearch
-				thumb = SmoothUtils.GetChannelThumb(category = title.replace(" HD", "").replace(" NOW", "").replace(" NEXT", "").replace(" BEST", ""), large = False)
-				oc.add(DirectoryObject(key = Callback(SearchShows, query = searchString), title = title, thumb = thumb))
+			# TODO: add custom categories
+			if not Prefs['mySearch'] is None and len(Prefs['mySearch']) > 2:
+				for mySearch in Prefs['mySearch'].split(";"):
+					if ":" in mySearch:
+						title = mySearch.split(":")[0].strip()
+						searchString = mySearch.split(":")[1].strip()
+					else:
+						title = mySearch
+						searchString = mySearch
+					thumb = SmoothUtils.GetChannelThumb(category = title.replace(" HD", "").replace(" NOW", "").replace(" NEXT", "").replace(" BEST", ""), large = False)
+					oc.add(DirectoryObject(key = Callback(SearchShows, query = searchString), title = title, thumb = thumb))
 
-		oc.add(InputDirectoryObject(key = Callback(SearchShows), title = "Search Shows", prompt = 'Enter show title'))
+			oc.add(InputDirectoryObject(key = Callback(SearchShows), title = "Search Shows", prompt = 'Enter show title'))
 
-		# Preferences
-		oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
+			# Preferences
+			oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
 
 	return oc
+###################################################################################################
+@route(PREFIX + '/simple')
+def SimpleStreams(url = None):
+	oc = ObjectContainer()
+	source = sourceType()
+	Log.Debug('Channels menu: Source is ' + str(source))
+	#oc = ObjectContainer(title2 = "Channels")
+	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
+	channelsDict = Dict['channelsDict']
+	channelText = ''
+	currentTime = SmoothUtils.getCurrentTimeNative()
+
+	for i in range(1, 5):
+		if not channelsDict is None:
+			break
+		Log.Info('sleeping 500ms for async schedule details to return')
+		Thread.Sleep(0.5)
+
+	for channelNum in range(1, MAX_CHAN + 1):
+		if not channelsDict is None and str(channelNum) in channelsDict:
+			channelItem = channelsDict[str(channelNum)]
+			channelName = channelItem.name.replace("720P", "HD")
+			nowPlaying = channelItem.NowPlaying()
+			upcoming = channelItem.Upcoming()
+			if not upcoming is None and len(upcoming) > 0:
+				upcoming = upcoming[0]
+
+			if nowPlaying is None:
+				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname}")
+				category = ""
+				tagLine = ""
+			else:
+				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname} {title} {qual} {lang} {time} ({cat})")
+				category = nowPlaying['category']
+				tagLine = nowPlaying['description']
+
+			if upcoming is None or len(upcoming) == 0:
+				summaryText = ""
+			else:
+				summaryText = formatShowText(channelItem, upcoming, currentTime, "{when} {title} {qual} {lang} {time} ({cat})")
+
+			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = False) #, chanFirst = True
+
+			if Prefs['channelDetails']:
+				channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
+				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(titleText), thumb = thumb))
+			else:
+				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = True) #, chanFirst = True
+				oc.add(VideoClipObject(
+					key = Callback(CreateVideoClipObject,
+						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
+						title = SmoothUtils.fix_text(titleText),
+						tagline = SmoothUtils.fix_text(tagLine),
+						summary = SmoothUtils.fix_text(summaryText),
+						thumb = thumbV,
+						studio = channelName,
+						quotes = "",
+						container = True),
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
+					title = SmoothUtils.fix_text(titleText),
+					tagline = SmoothUtils.fix_text(tagLine),
+					summary = SmoothUtils.fix_text(summaryText),
+					studio = channelName,
+					quotes = "",
+					thumb = thumbV,
+					items = [
+						MediaObject(
+							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
+							optimized_for_streaming = True
+						)
+					]
+					))
+	return oc
+
+###################################################################################################
+@route(PREFIX + '/simplenoepg')
+def SimpleStreamsNoEPG(url = None):
+	oc = ObjectContainer()
+	source = sourceType()
+	Log.Debug('Channels menu: Source is ' + str(source))
+	#oc = ObjectContainer(title2 = "Channels")
+	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
+	channelsDict = Dict['channelsDict']
+	channelText = ''
+	currentTime = SmoothUtils.getCurrentTimeNative()
+
+	for i in range(1, 5):
+		if not channelsDict is None:
+			break
+		Log.Info('sleeping 500ms for async schedule details to return')
+		Thread.Sleep(0.5)
+
+	for channelNum in range(1, MAX_CHAN + 1):
+		if not channelsDict is None and str(channelNum) in channelsDict:
+			summaryText = ""
+
+			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = False) #, chanFirst = True
+			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = "", category = "", large = True) #, chanFirst = True
+			oc.add(VideoClipObject(
+				key = Callback(CreateVideoClipObject,
+					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
+					title = channelNum,
+					tagline = "",
+					summary = "",
+					thumb = thumbV,
+					studio = "",
+					quotes = "",
+					container = True),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
+				title = channelNum,
+				tagline = "",
+				summary = "",
+				studio = channelNum,
+				quotes = "",
+				thumb = thumbV,
+				items = [
+					MediaObject(
+						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
+						optimized_for_streaming = True
+					)
+				]
+				))
+	return oc
+
 ###################################################################################################
 
 @route(PREFIX + '/searchShows')
 def SearchShows(query):
-    source = sourceType()
+	source = sourceType()
 	channelsDict = Dict['channelsDict']
 	showsListAll = Dict['showsList']
 	oc = ObjectContainer(title2 = "Search Results for {0}".format(query))
@@ -264,8 +393,8 @@ def SearchShows(query):
 ###################################################################################################
 @route(PREFIX + '/channels')
 def ChannelsMenu(url = None):
-    source = sourceType()
-    Log.Debug('Channels menu: Source is ' + str(source))
+	source = sourceType()
+	Log.Debug('Channels menu: Source is ' + str(source))
 	oc = ObjectContainer(title2 = "Channels")
 	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
 	channelsDict = Dict['channelsDict']
@@ -347,7 +476,7 @@ def ChannelsMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/live')
 def LiveMenu(url = None):
-    source = sourceType()
+	source = sourceType()
 	oc = ObjectContainer(title2 = "Live")
 	Log.Info(PLUGIN_VERSION + ' LiveMenu')
 	channelsDict = Dict['channelsDict']
@@ -413,7 +542,7 @@ def LiveMenu(url = None):
 #################################################################################################
 @route(PREFIX + '/categories')
 def CategoriesMenu():
-    source = sourceType()
+	source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoriesMenu")
 	oc = ObjectContainer(title2 = "Categories")
 	Log.Info('Categories')
@@ -435,7 +564,7 @@ def CategoriesMenu():
 #################################################################################################
 @route(PREFIX + '/category')
 def CategoryMenu(url = None):
-    source = sourceType()
+	source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoryMenu " + url)
 	if url is None:
 		oc = ObjectContainer(title2 = "Categories")
@@ -512,7 +641,7 @@ def CategoryMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/channels/schedulelist')
 def ScheduleListMenu(startIndex = 0):
-    source = sourceType()
+	source = sourceType()
 	pageCount = int(Prefs['pageCount'])
 	endIndex = int(startIndex) + pageCount
 
@@ -566,7 +695,7 @@ def ScheduleListMenu(startIndex = 0):
 		# CHECK PREFS for Scheduled Channel Details
 		if Prefs['channelDetails']:
 			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = False)
-		 	oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(channelText), tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
+			oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(channelText), tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
 		else:
 			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 			oc.add(VideoClipObject(
@@ -601,7 +730,7 @@ def ScheduleListMenu(startIndex = 0):
 #################################################################################################
 @route(PREFIX + '/channels/playmenu')
 def PlayMenu(url = None, channelNum = None):
-    source = sourceType()
+	source = sourceType()
 	### This is the detailed PLAY menu after a channel has been selected which shows NOW PLAYING, and then the shows that will be on later
 	Log.Info(PLUGIN_VERSION + ' PlayMenu with Url ' + url)
 	oc = ObjectContainer(title1 = 'Channel ' + channelNum)
@@ -694,7 +823,7 @@ def PlayMenu(url = None, channelNum = None):
 #####https://github.com/Cigaras/IPTV.bundle/blob/master/Contents/Code/__init__.py
 @route(PREFIX + '/listitems', items_dict = dict)
 def ListItems(items_dict, group):
-    source = sourceType()
+	source = sourceType()
 	oc = ObjectContainer(title1 = L(group))
 	items_list = []
 	for i in items_dict:

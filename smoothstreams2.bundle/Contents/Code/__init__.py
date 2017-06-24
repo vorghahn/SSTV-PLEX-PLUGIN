@@ -31,6 +31,7 @@ NAME = 'Smoothstreams'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
 PLUGIN_VERSION = ''
 PLUGIN_VERSION_LATEST = ''
+source = ''
 
 ART  = 'art-default.png'
 ICON = 'icon-default.png'
@@ -73,7 +74,8 @@ def sourceType():
 		Log.Debug('Forcing RTMP stream based on detected platform ' + str(Client.Platform))
 	else:
 		Log.Debug('Using user settings for client: ' + str(Client.Platform))
-
+        Log.Debug('Source is ' + str(source))
+        return source
 
 ###################################################################################################
 
@@ -92,7 +94,7 @@ def VideoMainMenu():
 	Log.Info(PLUGIN_VERSION + ' VideoMainMenu called: ')
 	MAX_CHAN = int(Prefs['numChannels'])
 	oc = ObjectContainer()
-	sourceType()
+	source = sourceType()
 
 	if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 		updateAvailable = " - plugin update available"
@@ -135,6 +137,7 @@ def VideoMainMenu():
 
 @route(PREFIX + '/searchShows')
 def SearchShows(query):
+        source = sourceType()
 	channelsDict = Dict['channelsDict']
 	showsListAll = Dict['showsList']
 	oc = ObjectContainer(title2 = "Search Results for {0}".format(query))
@@ -212,7 +215,7 @@ def SearchShows(query):
 		channelItem = channelsDict[str(channelNum)]
 		channelName = channelItem.name.replace("720P", "HD")
 		titleText = formatShowText(channelItem, show, currentTime, "{when} {title} {qual} {lang} {time} ({cat}) {chname} #{ch}")
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
 		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = False)
 		showCount += 1
 
@@ -223,20 +226,20 @@ def SearchShows(query):
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 				oc.add(VideoClipObject(
 					key = Callback(CreateVideoClipObject,
-						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 						title = SmoothUtils.fix_text(titleText),
 						tagline = SmoothUtils.fix_text(show['description']),
 						summary = "",
 						thumb = thumbV,
 						container = True),
-					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
 					thumb = thumbV,
 					items = [
 						MediaObject(
-							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 							optimized_for_streaming = True
 						)
 					]
@@ -244,7 +247,7 @@ def SearchShows(query):
 			else:
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 				oc.add(CreateVideoClipObject(
-					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&" + show['id'] + "&tm=" + str(show['time']).replace(" ", ""),
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source) + "&" + show['id'] + "&tm=" + str(show['time']).replace(" ", ""),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
@@ -261,6 +264,8 @@ def SearchShows(query):
 ###################################################################################################
 @route(PREFIX + '/channels')
 def ChannelsMenu(url = None):
+        source = sourceType()
+        Log.Debug('Channels menu: Source is ' + str(source))
 	oc = ObjectContainer(title2 = "Channels")
 	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
 	channelsDict = Dict['channelsDict']
@@ -310,13 +315,13 @@ def ChannelsMenu(url = None):
 			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = False) #, chanFirst = True
 
 			if Prefs['channelDetails']:
-				channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
+				channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
 				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(titleText), thumb = thumb))
 			else:
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = True) #, chanFirst = True
 				oc.add(VideoClipObject(
 					key = Callback(CreateVideoClipObject,
-						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 						title = SmoothUtils.fix_text(titleText),
 						tagline = SmoothUtils.fix_text(tagLine),
 						summary = SmoothUtils.fix_text(summaryText),
@@ -324,7 +329,7 @@ def ChannelsMenu(url = None):
 						studio = channelName,
 						quotes = "",
 						container = True),
-					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(tagLine),
 					summary = SmoothUtils.fix_text(summaryText),
@@ -333,7 +338,7 @@ def ChannelsMenu(url = None):
 					thumb = thumbV,
 					items = [
 						MediaObject(
-							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+							parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 							optimized_for_streaming = True
 						)
 					]
@@ -342,6 +347,7 @@ def ChannelsMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/live')
 def LiveMenu(url = None):
+        source = sourceType()
 	oc = ObjectContainer(title2 = "Live")
 	Log.Info(PLUGIN_VERSION + ' LiveMenu')
 	channelsDict = Dict['channelsDict']
@@ -373,7 +379,7 @@ def LiveMenu(url = None):
 		titleText = formatShowText(channelItem, show, currentTime, "{cat} {title} {qual} {lang} {time} {chname} #{ch}")
 
 		artUrl = 'http://smoothstreams.tv/schedule/includes/images/uploads/8ce52ab224906731eaed8497eb1e8cb4.png'
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
 		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = False)
 
 		if Prefs['channelDetails']:
@@ -382,14 +388,14 @@ def LiveMenu(url = None):
 			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 			oc.add(VideoClipObject(
 				key = Callback(CreateVideoClipObject,
-					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
 					studio = channelName,
 					thumb = thumbV,
 					container = True),
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 				title = SmoothUtils.fix_text(titleText),
 				tagline = SmoothUtils.fix_text(show['description']),
 				summary = "",
@@ -397,7 +403,7 @@ def LiveMenu(url = None):
 				thumb = thumbV,
 				items = [
 					MediaObject(
-						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 						optimized_for_streaming = True
 					)
 				]
@@ -407,6 +413,7 @@ def LiveMenu(url = None):
 #################################################################################################
 @route(PREFIX + '/categories')
 def CategoriesMenu():
+        source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoriesMenu")
 	oc = ObjectContainer(title2 = "Categories")
 	Log.Info('Categories')
@@ -428,6 +435,7 @@ def CategoriesMenu():
 #################################################################################################
 @route(PREFIX + '/category')
 def CategoryMenu(url = None):
+        source = sourceType()
 	Log.Info(PLUGIN_VERSION + " CategoryMenu " + url)
 	if url is None:
 		oc = ObjectContainer(title2 = "Categories")
@@ -460,7 +468,7 @@ def CategoryMenu(url = None):
 		channelName = channelItem.name.replace("720P", "HD")
 		titleText = formatShowText(channelItem, show, currentTime, "{when} {title} {qual} {lang} {time} {chname} #{ch}")
 		artUrl = 'http://smoothstreams.tv/schedule/includes/images/uploads/8ce52ab224906731eaed8497eb1e8cb4.png'
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
 		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = False)
 
 		if Prefs['channelDetails']:
@@ -469,20 +477,20 @@ def CategoryMenu(url = None):
 			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 			oc.add(VideoClipObject(
 				key = Callback(CreateVideoClipObject,
-					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 					title = SmoothUtils.fix_text(titleText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
 					thumb = thumbV,
 					container = True),
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 				title = SmoothUtils.fix_text(titleText),
 				tagline = SmoothUtils.fix_text(show['description']),
 				summary = "",
 				thumb = thumbV,
 				items = [
 					MediaObject(
-						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 						optimized_for_streaming = True
 					)
 				]
@@ -490,7 +498,7 @@ def CategoryMenu(url = None):
 		else:
 			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 			oc.add(CreateVideoClipObject(
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&" + show['id'] + "&tm=" + str(show['time']).replace(" ", ""),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source) + "&" + show['id'] + "&tm=" + str(show['time']).replace(" ", ""),
 				title = SmoothUtils.fix_text(titleText),
 				tagline = SmoothUtils.fix_text(show['description']),
 				thumb = thumbV
@@ -504,6 +512,7 @@ def CategoryMenu(url = None):
 ###################################################################################################
 @route(PREFIX + '/channels/schedulelist')
 def ScheduleListMenu(startIndex = 0):
+        source = sourceType()
 	pageCount = int(Prefs['pageCount'])
 	endIndex = int(startIndex) + pageCount
 
@@ -537,7 +546,7 @@ def ScheduleListMenu(startIndex = 0):
 		channelItem = None
 		channelText = u''
 		channelNum = str(show['channel'])
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)
 
 		if SmoothUtils.GetDateTimeNative(show['time']) > currentTime:
 			channelUrl += "&" + show['id']
@@ -562,20 +571,20 @@ def ScheduleListMenu(startIndex = 0):
 			thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 			oc.add(VideoClipObject(
 				key = Callback(CreateVideoClipObject,
-					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 					title = SmoothUtils.fix_text(channelText),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
 					thumb = thumbV,
 					container = True),
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 				title = SmoothUtils.fix_text(channelText),
 				tagline = SmoothUtils.fix_text(show['description']),
 				summary = "",
 				thumb = thumbV,
 				items = [
 					MediaObject(
-						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+						parts = [ PartObject(key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 						optimized_for_streaming = True
 					)
 				]
@@ -592,6 +601,7 @@ def ScheduleListMenu(startIndex = 0):
 #################################################################################################
 @route(PREFIX + '/channels/playmenu')
 def PlayMenu(url = None, channelNum = None):
+        source = sourceType()
 	### This is the detailed PLAY menu after a channel has been selected which shows NOW PLAYING, and then the shows that will be on later
 	Log.Info(PLUGIN_VERSION + ' PlayMenu with Url ' + url)
 	oc = ObjectContainer(title1 = 'Channel ' + channelNum)
@@ -617,16 +627,16 @@ def PlayMenu(url = None, channelNum = None):
 					thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
 					oc.add(VideoClipObject(
 					key = Callback(CreateVideoClipObject,
-						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 						title = SmoothUtils.fix_text(channelText),
 						thumb = thumbV,
 						container = True),
-					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 					title = formatShowText(channelItem, None, currentTime, "{ch} {chname}"),
 					thumb = thumbV,
 					items = [
 						MediaObject(
-							parts = [ PartObject( key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+							parts = [ PartObject( key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)), duration = 1000) ],
 							optimized_for_streaming = True
 						)
 					]
@@ -635,7 +645,7 @@ def PlayMenu(url = None, channelNum = None):
 				# we only get here if we couldn't get any schedule info
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = nowPlaying['category'], large = True)
 				oc.add(CreateVideoClipObject(
-					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
+					url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source)),
 					title = formatShowText(channelItem, nowPlaying, currentTime, "{title} {lang} ({qual}) {time}"),
 					tagline = SmoothUtils.fix_text(nowPlaying['description']),
 					summary = "",
@@ -644,7 +654,7 @@ def PlayMenu(url = None, channelNum = None):
 			for show in upcomingShows:
 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
 				oc.add(CreateVideoClipObject(
-					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&" + show['id'],
+					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source) + "&" + show['id'],
 					title = formatShowText(channelItem, show, currentTime, "{when}: {title} {lang} ({qual}) {time}"),
 					tagline = SmoothUtils.fix_text(show['description']),
 					summary = "",
@@ -656,7 +666,7 @@ def PlayMenu(url = None, channelNum = None):
 	if not addedItems:
 		oc.title1 = title
 		oc.add(CreateVideoClipObject(
-				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum, source),
 				title = SmoothUtils.fix_text(('WATCH: ' + title).encode("iso-8859-1")),
 				thumb = None
 			))
@@ -665,13 +675,13 @@ def PlayMenu(url = None, channelNum = None):
 		prevChan = int(channelNum) - 1
 		if prevChan < MIN_CHAN:
 			prevChan = MAX_CHAN
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(prevChan)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(prevChan, source)
 		oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = prevChan), title = ('/\\ ' + channelsDict[str(prevChan)].GetStatusText()).encode("iso-8859-1")))
 
 		nextChan = int(channelNum) + 1
 		if nextChan > MAX_CHAN:
 			nextChan = MIN_CHAN
-		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(nextChan)
+		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(nextChan, source)
 		oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = nextChan), title = ('\\/ ' + channelsDict[str(nextChan)].GetStatusText()), thumb = R(channelText2 + '.png')))
 	except Exception, e:
 		Log.Error('Could not add next/prev chan browse options')
@@ -684,6 +694,7 @@ def PlayMenu(url = None, channelNum = None):
 #####https://github.com/Cigaras/IPTV.bundle/blob/master/Contents/Code/__init__.py
 @route(PREFIX + '/listitems', items_dict = dict)
 def ListItems(items_dict, group):
+    source = sourceType()
 	oc = ObjectContainer(title1 = L(group))
 	items_list = []
 	for i in items_dict:
@@ -809,9 +820,9 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '20170618' #Resource.Load("version.txt", binary = False)
+		PLUGIN_VERSION =  '20170621' #Resource.Load("version.txt", binary = False)
 		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '20170618' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghan/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST =  '20170621' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

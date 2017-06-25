@@ -154,7 +154,7 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 		Dict['currentGuide'] = "Sports"
 		cacheSeconds = 1800 # cache for 30 minutes
 	else:
-		scheduleFeedURL = 'http://iptvguide.netlify.com/tv.json'
+		scheduleFeedURL = 'http://sstv.fog.pt/feedall5.json'
 		Dict['currentGuide'] = "All"
 		cacheSeconds = 21600 # cache for 6 hours because this guide is not updated often
 

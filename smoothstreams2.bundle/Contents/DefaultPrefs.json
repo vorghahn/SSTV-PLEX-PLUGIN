@@ -93,7 +93,7 @@
 		"id": "numChannels",
 		"type": "text",
 		"label": "Number of Channels",
-		"default": "120"
+		"default": "150"
 	},
 	{
 		"id": "customServer",

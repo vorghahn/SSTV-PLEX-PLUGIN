@@ -47,6 +47,19 @@
 		"default": "SD only"
 	},
 	{
+		"id": "quality",
+		"type": "enum",
+		"label": "Stream Quality (Select channels only)",
+		"values": ["LQ","HQ","HD"],
+		"default": "LQ"
+	},
+	{
+		"id": "numQuality",
+		"type": "text",
+		"label": "Number of Channels that carry multiple qualities",
+		"default": "60"
+	},
+	{
 		"id": "sourcetype",
 		"type": "enum",
 		"label": "HLS or RTMP",
@@ -93,7 +106,7 @@
 		"id": "numChannels",
 		"type": "text",
 		"label": "Number of Channels",
-		"default": "150"
+		"default": "120"
 	},
 	{
 		"id": "customServer",

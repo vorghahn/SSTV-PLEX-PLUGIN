@@ -415,22 +415,22 @@ def ChannelsMenu(url = None):
 			channelName = channelItem.name.replace("720P", "HD")
 			nowPlaying = channelItem.NowPlaying()
 			upcoming = channelItem.Upcoming()
-			if hdOnly == "SD only" and not(channelName.find("720p") == -1 and channelName.find("720P") == -1 and channelName.find("1080i") == -1 and channelName.find("HD") == -1):
-				nowPlaying = None
-			elif hdOnly == "HD only" and (channelName.find("720p") == -1 and channelName.find("720P") == -1 and channelName.find("1080i") == -1 and channelName.find("HD") == -1):
-				nowPlaying = None
+			# if hdOnly == "SD only" and not(channelName.find("720p") == -1 and channelName.find("720P") == -1 and channelName.find("1080i") == -1 and channelName.find("HD") == -1):
+			# 	nowPlaying = None
+			# elif hdOnly == "HD only" and (channelName.find("720p") == -1 and channelName.find("720P") == -1 and channelName.find("1080i") == -1 and channelName.find("HD") == -1):
+			# 	nowPlaying = None
 			if not upcoming is None and len(upcoming) > 0:
 				upcoming = upcoming[0]
 
 			if nowPlaying is None:
-				if hdOnly == "SD only":
-					titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch}")
-					category = ""
-					tagLine = ""
-				else:
-					titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname}")
-					category = ""
-					tagLine = ""
+				# if hdOnly == "SD only":
+				# 	titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch}")
+				# 	category = ""
+				# 	tagLine = ""
+				# else:
+				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname}")
+				category = ""
+				tagLine = ""
 			else:
 				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname} {title} {qual} {lang} {time} ({cat})")
 
@@ -490,7 +490,7 @@ def LiveMenu(url = None):
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
 
-	showsList = [i for i in showsListAll if SmoothUtils.GetDateTimeNative(i['time']) <= currentTime and SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime and ((Prefs['hdOnly'] == "SD only" and not (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or (Prefs['hdOnly'] == "HD only" and (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or Prefs['hdOnly'] == "Both")]
+	showsList = [i for i in showsListAll if SmoothUtils.GetDateTimeNative(i['time']) <= currentTime and SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime]
 	showsList.sort(key = lambda x: (x['category'], x['name'], x['quality'], x['time']))
 
 	for i in range(0, len(showsList)):
@@ -584,7 +584,7 @@ def CategoryMenu(url = None):
 
 	# filter and sort the shows for the category by start time
 	if url in categoryDict:
-		showsList = sorted([i for i in categoryDict[url] if SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime and ((Prefs['hdOnly'] == "SD only" and not (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or (Prefs['hdOnly'] == "HD only" and (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or Prefs['hdOnly'] == "Both")], key = lambda x: (x['time'], x['name'], x['quality']))
+		showsList = sorted([i for i in categoryDict[url] if SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime], key = lambda x: (x['time'], x['name'], x['quality']))
 	else:
 		showsList = []
 
@@ -661,7 +661,7 @@ def ScheduleListMenu(startIndex = 0):
 	parser = dateutil.parser()
 	currentTime = SmoothUtils.getCurrentTimeNative()
 
-	showsList = [i for i in showsList if SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime and ((Prefs['hdOnly'] == "SD only" and not (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or (Prefs['hdOnly'] == "HD only" and (i['quality'].lower() == '720p' or i['quality'].lower() == '1080i')) or Prefs['hdOnly'] == "Both")]
+	showsList = [i for i in showsList if SmoothUtils.GetDateTimeNative(i['end_time']) >= currentTime]
 	showsList.sort(key = lambda x: (x['time'], x['name'], x['quality']))
 
 	if endIndex > len(showsList):
@@ -950,9 +950,9 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '20170625dev' #Resource.Load("version.txt", binary = False)
+		PLUGIN_VERSION =  '20170722dev' #Resource.Load("version.txt", binary = False)
 		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '20170625dev' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST =  '20170722dev' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

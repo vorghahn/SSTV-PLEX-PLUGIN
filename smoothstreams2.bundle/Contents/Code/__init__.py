@@ -24,7 +24,7 @@ Smoothstreams_URL1 = 'http://a.video.Smoothstreams.com/'
 BASE_URL = 'http://www.Smoothstreams.com/videos'
 
 MIN_CHAN = 1 # probably a given
-MAX_CHAN = 120 # changed this to a preference
+MAX_CHAN = 150 # changed this to a preference
 
 VIDEO_PREFIX = ''
 NAME = 'Smoothstreams'

@@ -149,15 +149,23 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 		Dict['ScheduleUtcOffset'] = -5
 
 	parser = dateutil.parser()
+	if Prefs['secureEPG']:
+		secureEPG = 'https'
+	else:
+		secureEPG = 'http'
 	if Prefs['sportsOnly']:
-		scheduleFeedURL = 'http://iptvguide.netlify.com/iptv.json'
+		scheduleFeedURL = secureEPG + '://iptvguide.netlify.com/iptv.json'
 		Dict['currentGuide'] = "Sports"
 		cacheSeconds = 1800 # cache for 30 minutes
 	else:
-		scheduleFeedURL = 'https://speed.guide.smoothstreams.tv/feed.json'
+		if Prefs['epg'] == 'iptv':
+			scheduleFeedURL = secureEPG + '://iptvguide.netlify.com/tv.json'
+		elif Prefs['epg'] == 'fogs':
+			scheduleFeedURL = secureEPG + '://sstv.fog.pt/feedall1.json '
+		else:
+			scheduleFeedURL = secureEPG + '://speed.guide.smoothstreams.tv/feed.json'
 		Dict['currentGuide'] = "All"
 		cacheSeconds = 21600 # cache for 6 hours because this guide is not updated often
-
 	result = JSON.ObjectFromURL(scheduleFeedURL, cacheTime = cacheSeconds)
 	Log.Info("Getting guide from " + scheduleFeedURL)
 	

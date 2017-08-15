@@ -34,6 +34,19 @@
 		"default": "No"
 	},
 	{
+		"id": "secureEPG",
+		"type": "bool",
+		"label": "Https for EPG",
+		"default": "True"
+	},
+	{
+		"id": "epg",
+		"type": "enum",
+		"label": "Simple (Channel List Only)",
+		"values": ["fogs","iptv","smoothstreams"],
+		"default": "smoothstreams"
+	},
+	{
 		"id": "mySearch",
 		"type": "text",
 		"label": " My Search",

@@ -42,7 +42,7 @@
 	{
 		"id": "epg",
 		"type": "enum",
-		"label": "Simple (Channel List Only)",
+		"label": "EPG Source",
 		"values": ["fogs","iptv","smoothstreams"],
 		"default": "iptv"
 	},

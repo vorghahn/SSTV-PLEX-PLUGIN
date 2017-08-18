@@ -123,13 +123,13 @@ def GetServicePort(serviceName=None):
 		Log.Error('No serviceName specified')
 		port = "80" # this will at least let ss server op log it if debugging on that end
 	elif serviceName == 'StreamTVNow':
-		port = "9100"
+		port = "443" #"9100"
 	elif serviceName == 'StarStreams':
-		port = "9100"
+		port = "443" #"9100"
 	elif serviceName == 'Live247':
-		port = "9100" #deu.smoothstreams.tv:12935
+		port = "443" #"9100" #deu.smoothstreams.tv:12935
 	elif serviceName == 'MyStreams':
-		port = "9100"
+		port = "443" #"9100"
 	else:
 		Log.Error('Invalid service name supplied to GetServicePort')
 	return port
@@ -282,7 +282,7 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 		servicePort = GetServicePort(Prefs['service'])
 	if source == "HLS":
 		try:
-				channelUrl = 'http://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
+				channelUrl = 'https://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
 		except:
 				servicePort = 3625
 				channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq%s.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum), quality)
@@ -292,7 +292,7 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 				servicePort = 3625
 				channelUrl = 'rtmp://%s:%s/%s?wmsAuthSign=%s/ch%sq%s.stream' % (server, servicePort, SmoothAuth.getLoginSite(), Dict['SPassW'],'%02d' % int(channelNum), quality)
 		except:
-				channelUrl = 'http://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
+				channelUrl = 'https://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
 				servicePort = GetServicePort(Prefs['service'])
 	return channelUrl
 

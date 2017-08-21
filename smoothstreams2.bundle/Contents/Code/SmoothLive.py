@@ -94,11 +94,15 @@ def lineup():
         #example m3u8 line
         #Line 1 #EXTINF:-1 tvg-id="tv.9" tvg-logo="http://www.freeviewnz.tv/nonumbracoimages/ChannelsOpg/TVNZ11280x1280.png",TVNZ 1
         #Line 2 https://tvnzioslive04-i.akamaihd.net/hls/live/267188/1924997895001/channel1/master.m3u8|X-Forwarded-For=219.88.222.91
+        
+        # #EXTINF:-1 tvg-id="133" tvg-logo="https:https://guide.smoothstreams.tv/assets/images/channels/110.png" tvg-name="BT Sport 3 HD" tvg-num="110",BT Sport 3 HD
+        # pipe://#PATH# 110
         header = file.readline()
         url = file.readline()
         header = header.split(",")
         metadata = header[0]
         metadata = metadata.split(" ")
+        channelName = header[1]
         for item in metadata:
             if item == "#EXTINF:-1":
                 metadata.remove("#EXTINF:-1")
@@ -106,7 +110,10 @@ def lineup():
                 channelId = item[8:-1]
             elif "tvg-logo" in item:
                 channelLogo = item[10:-1]
-        channelName = header[1]
+            elif "tvg-name" in item:
+                channelName = item[10:-1]
+            elif "tvg-num" in item:
+                channelNum = item[9:-1]
         print (channelName)
         print (url)
         #random web pipe
@@ -114,7 +121,7 @@ def lineup():
         #jobriens ffmpeg pipe
         pipeUrl = "ffmpeg -i url -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1"
         lineup.append({'GuideNumber': channelNum,
-                           'GuideName': str(channelNum) + channelName,
+                           'GuideName': str(channelNum) + " " + channelName,
                            'URL': pipeUrl
                            })
         # print ({'GuideNumber': channelNum,

@@ -265,12 +265,13 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 	#Log.Debug('HELP,Source is ' + str(source))
 	if checkQuality:
 		return GetChannelUrlByQuality(channelNum, True)
-	if Prefs['quality'] == 'LQ':
-		quality = 3
-	elif Prefs['quality'] == 'HQ':
-		quality = 2
-	else:
-		quality = 1
+# 	if Prefs['quality'] == 'LQ':
+# 		quality = 3
+# 	elif Prefs['quality'] == 'HQ':
+# 		quality = 2
+# 	else:
+# 		quality = 1
+	quality = Dict['quality']
 	numQuality = Prefs['numQuality']
 	if int(channelNum) > int(numQuality):
 		quality = 1
@@ -280,7 +281,7 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 	else:
 		server = GetServerUrlByName(Prefs["serverLocation"])
 		servicePort = GetServicePort(Prefs['service'])
-	if source == "HLS":
+	if Dict['source'] == "HLS":
 		try:
 				channelUrl = 'https://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
 		except:

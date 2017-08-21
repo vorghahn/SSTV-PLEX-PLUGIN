@@ -75,6 +75,7 @@ def sourceType():
 	else:
 		Log.Debug('Using user settings for client: ' + str(Client.Platform))
 		Log.Debug('Source is ' + str(source))
+	Dict['source'] = source
 	return source
 
 ###################################################################################################
@@ -211,6 +212,8 @@ def SimpleStreams(url = None):
 						)
 					]
 					))
+			# Preferences
+			oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################
@@ -261,6 +264,8 @@ def SimpleStreamsNoEPG(url = None):
 				)
 			]
 			))
+		# Preferences
+		oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################

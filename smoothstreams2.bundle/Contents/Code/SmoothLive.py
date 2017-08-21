@@ -58,11 +58,17 @@ def status():
 @app.route('/lineup.json')
 def lineup():
     lineup = []
+    
+    for i in range(1,151):
+        lineup.append({'GuideNumber': i,
+                           'GuideName': i + "ESPNEWS",
+                           'URL': SmoothUtils.GetFullUrlFromChannelNumber(i, "HLS")
+                           })    
 
-    lineup.append({'GuideNumber': "1",
-                           'GuideName': "ESPNEWS",
-                           'URL':"http://dnaw1.smoothstreams.tv:9100/viewms/ch01q1.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9OC8yMC8yMDE3IDc6NDU6MDIgUE0maGFzaF92YWx1ZT1FanNiNVFmeEFNb211cVN6Zkl3c3JBPT0mdmFsaWRtaW51dGVzZpZD12aWV3bXMtMTUzNTk==="
-                           })
+    #lineup.append({'GuideNumber': "1",
+    #                       'GuideName': "ESPNEWS",
+    #                       'URL':"http://dnaw1.smoothstreams.tv:9100/viewms/ch01q1.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9OC8yMC8yMDE3IDc6NDU6MDIgUE0maGFzaF92YWx1ZT1FanNiNVFmeEFNb211cVN6Zkl3c3JBPT0mdmFsaWRtaW51dGVzZpZD12aWV3bXMtMTUzNTk==="
+    #                       })
 
     return jsonify(lineup)
 

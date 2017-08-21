@@ -19,3 +19,14 @@ This is a Plex plugin to access your SmoothStreamsTV account.
 - Delete com.plexapp.plugins.smoothstreams2 - use this link to find the location depending on platform- https://support.plex.tv/hc/enus/articles/202967376-Clearing-Plugin-Channel-Agent-HTTP-Caches
 - Delete com.plexapp.plugins.smoothstreams2 from the Data folder. Use the above link and change Caches for Data on the end of the string to find the location. Change %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Caches\ to %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Data
 
+## SmoothLive
+SmoothLive is forked from TVH-Proxy located here:https://github.com/jkaberg/tvhProxy and modified here: https://github.com/bjzy/sstvProxy. TVH Proxy was designed to allow TVh to talk to Plex, SmoothLive has modified this to run from an m3u8 file instead of TVH.
+
+tvhProxy Developer (majority of code, thanks!): Joel Kaaberg <joel.kaberg@gmail.com>
+sstvProxy Development Lead: bjzy <bjzybjzy@gmail.com>
+Patches and Suggestions: Nikhil Choudhary
+
+SmoothLive is small flask app to proxy SSTV streams via an m3u8 to Plex Media Server (DVR).
+
+
+

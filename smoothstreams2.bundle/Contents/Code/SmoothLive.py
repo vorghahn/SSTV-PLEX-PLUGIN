@@ -109,9 +109,13 @@ def lineup():
         channelName = header[1]
         print (channelName)
         print (url)
+        #random web pipe
+        #ffmpeg -i url -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352
+        #jobriens ffmpeg pipe
+        pipeUrl = "ffmpeg -i url -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1"
         lineup.append({'GuideNumber': channelNum,
                            'GuideName': str(channelNum) + channelName,
-                           'URL': url
+                           'URL': pipeUrl
                            })
         # print ({'GuideNumber': channelNum,
         #                    'GuideName': str(channelNum) + channelName,

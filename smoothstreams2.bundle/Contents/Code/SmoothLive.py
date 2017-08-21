@@ -74,18 +74,20 @@ app = Flask(__name__)
 
 @app.route('/lineup.json')
 def lineup():
-    #Python 3
-    # scheduleResult = SmoothPlaylist.main()
-    
-    #Python 2 compatible
-    child = subprocess.Popen("python SmoothPlaylist.py", shell=True, stderr=subprocess.PIPE)
-    while True:
-        out = child.stderr.read(1)
-        if out == '' and child.poll() != None:
-            break
-        if out != '':
-            sys.stdout.write(out)
-            sys.stdout.flush()
+    #check if m3u8 is less than a day old
+    if os.path.localtime() > (os.path.getmtime("SmoothStreamsTV-xml.m3u8") + 86400):
+        #Python 3
+        # scheduleResult = SmoothPlaylist.main()
+
+        #Python 2 compatible
+        child = subprocess.Popen("python SmoothPlaylist.py", shell=True, stderr=subprocess.PIPE)
+        while True:
+            out = child.stderr.read(1)
+            if out == '' and child.poll() != None:
+                break
+            if out != '':
+                sys.stdout.write(out)
+                sys.stdout.flush()
     file = open("SmoothStreamsTV-xml.m3u8", 'r')
     file.readline()
     lineup = []

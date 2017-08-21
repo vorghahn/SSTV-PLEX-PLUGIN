@@ -57,11 +57,15 @@ def status():
 
 @app.route('/lineup.json')
 def lineup():
+    SmoothUtils.GetScheduleJson()
+    channelsDict = Dict['channelsDict']
     lineup = []
     
     for i in range(1,151):
+        channelItem = channelsDict[str(channelNum)]
+		channelName = channelItem.name.replace("720P", "HD")
         lineup.append({'GuideNumber': i,
-                           'GuideName': i + "ESPNEWS",
+                           'GuideName': i + channelName,
                            'URL': SmoothUtils.GetFullUrlFromChannelNumber(i, "HLS")
                            })    
 

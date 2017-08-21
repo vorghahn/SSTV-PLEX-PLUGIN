@@ -15,13 +15,28 @@
 
 from gevent import monkey; monkey.patch_all()
 
-import time
+import sys
 import os
+import dateutil.parser
+import datetime
+import urllib2
+import SmoothUtils
+import SmoothAuth
+import traceback
+import operator
+import bisect
+import time
+import calendar
+import shlex
 import requests
 from gevent.pywsgi import WSGIServer
 from flask import Flask, Response, request, jsonify, abort
+import SmoothUtils
+import SmoothAuth
+# import SmoothPlaylist #requires python 3
 
 app = Flask(__name__)
+
 
 config = {
     'bindAddr': os.environ.get('SSTV_BINDADDR') or '',
@@ -55,26 +70,35 @@ def status():
     })
 
 
+
 @app.route('/lineup.json')
 def lineup():
-    SmoothUtils.GetScheduleJson()
-    channelsDict = Dict['channelsDict']
+    # scheduleResult = SmoothPlaylist.main()
+    file = open("SmoothStreamsTV-xml.m3u8", 'r')
+    file.readline()
     lineup = []
     
-    for i in range(1,151):
-        channelItem = channelsDict[str(channelNum)]
-		channelName = channelItem.name.replace("720P", "HD")
-        lineup.append({'GuideNumber': i,
-                           'GuideName': i + channelName,
-                           'URL': SmoothUtils.GetFullUrlFromChannelNumber(i, "HLS")
-                           })    
+    for channelNum in range(1,151):
+        header = file.readline()
+        url = file.readline()
+        channelName = header.replace("#EXTINF:-1,", "")
+        print channelName
+        print url
+        lineup.append({'GuideNumber': channelNum,
+                           'GuideName': str(channelNum) + channelName,
+                           'URL': url
+                           })
+        # print ({'GuideNumber': channelNum,
+        #                    'GuideName': str(channelNum) + channelName,
+        #                    'URL': url
+        #                    })
 
     #lineup.append({'GuideNumber': "1",
     #                       'GuideName': "ESPNEWS",
     #                       'URL':"http://dnaw1.smoothstreams.tv:9100/viewms/ch01q1.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9OC8yMC8yMDE3IDc6NDU6MDIgUE0maGFzaF92YWx1ZT1FanNiNVFmeEFNb211cVN6Zkl3c3JBPT0mdmFsaWRtaW51dGVzZpZD12aWV3bXMtMTUzNTk==="
     #                       })
 
-    return jsonify(lineup)
+    # return jsonify(lineup)
 
 
 @app.route('/lineup.post')
@@ -85,3 +109,5 @@ def lineup_post():
 if __name__ == '__main__':
     http = WSGIServer((config['bindAddr'], 5004), app.wsgi_app)
     http.serve_forever()
+
+

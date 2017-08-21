@@ -1,0 +1,11 @@
+[Unit]
+Description=A simple proxy for SSTV and Plex DVR
+
+[Service]
+Environment=
+WorkingDirectory=/home/tvh/tvhProxy/
+ExecStart=/home/tvh/tvhProxy/venv/bin/python /home/tvh/tvhProxy/SmoothLive.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

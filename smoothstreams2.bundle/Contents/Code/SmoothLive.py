@@ -74,7 +74,10 @@ app = Flask(__name__)
 
 @app.route('/lineup.json')
 def lineup():
+    #Python 3
     # scheduleResult = SmoothPlaylist.main()
+    
+    #Python 2 compatible
     child = subprocess.Popen("python SmoothPlaylist.py", shell=True, stderr=subprocess.PIPE)
     while True:
         out = child.stderr.read(1)
@@ -88,9 +91,22 @@ def lineup():
     lineup = []
     
     for channelNum in range(1,151):
+        #example m3u8 line
+        #Line 1 #EXTINF:-1 tvg-id="tv.9" tvg-logo="http://www.freeviewnz.tv/nonumbracoimages/ChannelsOpg/TVNZ11280x1280.png",TVNZ 1
+        #Line 2 https://tvnzioslive04-i.akamaihd.net/hls/live/267188/1924997895001/channel1/master.m3u8|X-Forwarded-For=219.88.222.91
         header = file.readline()
         url = file.readline()
-        channelName = header.replace("#EXTINF:-1,", "")
+        header = header.split(",")
+        metadata = header[0]
+        metadata = metadata.split(" ")
+        for item in metadata:
+            if item == "#EXTINF:-1":
+                metadata.remove("#EXTINF:-1")
+            elif "tvg-id" in item:
+                channelId = item[8:-1]
+            elif "tvg-logo" in item:
+                channelLogo = item[10:-1]
+        channelName = header[1]
         print (channelName)
         print (url)
         lineup.append({'GuideNumber': channelNum,

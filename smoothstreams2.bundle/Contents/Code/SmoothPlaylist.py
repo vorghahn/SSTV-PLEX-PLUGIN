@@ -433,7 +433,7 @@ def generatePlaylists(server, rtmp, service, streamQuality, minQuality, guideLoo
 		program = getProgram(jsonGuide1, jsonGuide2, channel, time.localtime(time.time() + guideLookAheadMinutes * 60))
 		url = urlTemplate.format(server, service, format(channel, "02"), str(streamQuality), authSign)
 		urlAlt = urlTemplate.format(serverAlt, service, format(channel, "02"), str(streamQuality), authSign)
-		print('\r' + str(channel) + "/" + str(maxChannel), end='')
+		print('\r' + str(channel) + "/" + str(maxChannel),)
 		if (len(find) == 0 or re.search(find, program.title.lower()) != None):
 			chanResp = checkChannelURL(channel, url)
 			if (config["includeBadChannels"] or chanResp.find("#EXT-X-VERSION:") > 0):
@@ -521,7 +521,7 @@ def generatePlaylistXML(server, rtmp, service, streamQuality, authSign, jsonGuid
 		channelName = ""
 		url = urlTemplate.format(server, service, format(channel, "02"), str(streamQuality), authSign)
 		urlAlt = urlTemplate.format(serverAlt, service, format(channel, "02"), str(streamQuality), authSign)
-		print('\r' + str(channel) + "/" + str(maxChannel), end='')
+		print('\r' + str(channel) + "/" + str(maxChannel),)
 		if str(int(channel)) in jsonGuide1:
 			oChannel = jsonGuide1[str(int(channel))]
 			channelName = oChannel["name"]

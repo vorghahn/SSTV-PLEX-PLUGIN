@@ -76,6 +76,12 @@ def sourceType():
 		Log.Debug('Using user settings for client: ' + str(Client.Platform))
 		Log.Debug('Source is ' + str(source))
 	Dict['source'] = source
+	if Prefs['quality'] == 'LQ':
+		Dict['quality'] = 3
+	elif Prefs['quality'] == 'HQ':
+		Dict['quality'] = 2
+	else:
+		Dict['quality'] = 1
 	return source
 
 ###################################################################################################

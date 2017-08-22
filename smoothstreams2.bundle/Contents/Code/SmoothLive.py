@@ -19,30 +19,17 @@ from gevent import monkey; monkey.patch_all()
 import subprocess
 import sys
 import os
-# import dateutil.parser
-# import datetime
-# import urllib2
-# import SmoothUtils
-# import SmoothAuth
-# import traceback
-# import operator
-# import bisect
-# import time
-# import calendar
-# import shlex
-# import requests
+import datetime
+import time
 from gevent.pywsgi import WSGIServer
 from flask import Flask, Response, request, jsonify, abort
-# import SmoothUtils
-# import SmoothAuth
-# import SmoothPlaylist #requires python 3
 
 app = Flask(__name__)
 
 cdict = {}
 config = {
     'bindAddr': os.environ.get('SSTV_BINDADDR') or '',
-    'sstvProxyURL': os.environ.get('SSTV_PROXY_URL') or 'http://localhost',
+    'sstvProxyURL': os.environ.get('SSTV_PROXY_URL') or 'http://192.168.1.23',
     'tunerCount': os.environ.get('SSTV_TUNER_COUNT') or 6,  # number of tuners to use for sstv
 }
 
@@ -75,7 +62,8 @@ def status():
 @app.route('/lineup.json')
 def lineup():
     #check if m3u8 is less than a day old
-    if os.path.localtime() > (os.path.getmtime("SmoothStreamsTV-xml.m3u8") + 86400):
+    if time.localtime() > (os.path.getmtime("SmoothStreamsTV-xml.m3u8") + 86400):
+        print ("updating m3u8")
         #Python 3
         # scheduleResult = SmoothPlaylist.main()
 
@@ -88,6 +76,7 @@ def lineup():
             if out != '':
                 sys.stdout.write(out)
                 sys.stdout.flush()
+    print (time.localtime(), (os.path.getmtime("SmoothStreamsTV-xml.m3u8")))
     file = open("SmoothStreamsTV-xml.m3u8", 'r')
     file.readline()
     lineup = []
@@ -101,49 +90,55 @@ def lineup():
         # #EXTINF:-1 tvg-id="133" tvg-logo="https:https://guide.smoothstreams.tv/assets/images/channels/110.png" tvg-name="BT Sport 3 HD" tvg-num="110",BT Sport 3 HD
         # pipe://#PATH# 110
         header = file.readline()
-        cdict[channelNum]['url'] = file.readline()
-        header = header.split(",")
-        metadata = header[0]
-        metadata = metadata.split(" ")
-        cdict[channelNum]['channelName'] = header[1]
-        for item in metadata:
-            if item == "#EXTINF:-1":
-                metadata.remove("#EXTINF:-1")
-            elif "tvg-id" in item:
-                cdict[channelNum]['channelId'] = item[8:-1]
-            elif "tvg-logo" in item:
-                cdict[channelNum]['channelLogo'] = item[10:-1]
-            elif "tvg-name" in item:
-                cdict[channelNum]['channelName'] = item[10:-1]
-            elif "tvg-num" in item:
-                cdict[channelNum]['channelNum'] = item[9:-1]
-            elif "epg-id" in item:
-                cdict[channelNum]['channelEPGID'] = item[8:-1]
-            elif "url-epg" in item:
-                cdict[channelNum]['channelEPG'] = item[9:-1]
-        print (cdict[channelNum]['channelName'])
-        print (cdict[channelNum]['url'])
-        #from: https://superuser.com/questions/835871/how-to-make-an-mpeg2-video-file-with-the-highest-quality-possible-using-ffmpeg
-        #pipeUrl = "ffmpeg -i $s -f lavfi -i aevalsrc=0 -shortest -c:v libx264 -profile:v baseline -crf 23 -c:a aac -strict experimental" %url
-        #random web pipe
-        #pipeUrl = "ffmpeg -i $s -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352" % url
-        #jobriens ffmpeg pipe
-        cdict[channelNum]['pipeUrl'] = "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % cdict[channelNum]['url']
+        if header:
+            cdict[channelNum]['url'] = file.readline()
+            header = header.split(",")
+            metadata = header[0]
+            metadata = metadata.split(" ")
+            cdict[channelNum]['channelName'] = header[1]
+            for item in metadata:
+                if item == "#EXTINF:-1":
+                    metadata.remove("#EXTINF:-1")
+                elif "tvg-id" in item:
+                    cdict[channelNum]['channelId'] = item[8:-1]
+                elif "tvg-logo" in item:
+                    cdict[channelNum]['channelLogo'] = item[10:-1]
+                elif "tvg-name" in item:
+                    cdict[channelNum]['channelName'] = item[10:-1]
+                elif "tvg-num" in item:
+                    cdict[channelNum]['channelNum'] = item[9:-1]
+                elif "epg-id" in item:
+                    cdict[channelNum]['channelEPGID'] = item[8:-1]
+                elif "url-epg" in item:
+                    cdict[channelNum]['channelEPG'] = item[9:-1]
+            print (cdict[channelNum]['channelName'])
+            print (cdict[channelNum]['url'])
+            lineup.append({'GuideNumber': channelNum,
+                               'GuideName': str(channelNum) + " " + cdict[channelNum]['channelName'],
+                               'URL': '%s/auto/v%s' % (config['sstvProxyURL'], str(channelNum))
+                               })
 
-        lineup.append({'GuideNumber': channelNum,
-                           'GuideName': str(channelNum) + " " + cdict[channelNum]['channelName'],
-                           'URL': '%s/auto/v%s' % config['sstvProxyURL'], str(channelNum)
-                           })
-    file.close()
         # print ({'GuideNumber': channelNum,
         #                    'GuideName': str(channelNum) + channelName,
         #                    'URL': url
         #                    })
+    file.close()
     return jsonify(lineup)
 
 @app.route('/auto/v<channelNum>')
 def channelProxy(channelNum):
-    return cdict[channelNum]['pipeUrl']
+    auth()
+    url = "http://%s.SmoothStreams.tv:9100/%s/ch%sq1.stream/playlist.m3u8?wmsAuthSign=%s==" % ('dsg', 'viewstvn', str(channelNum), str(cdict['hash']))
+    pipeUrl = 'ffmpeg -i $s -codec copy -loglevel error -f mpegts pipe:1' % str(url)
+    return pipeUrl
+
+def auth():
+    LOGIN_TIMEOUT_MINUTES = 60
+    postdata = {"username": 'uname', "password": 'pword', "site": 'viewstvn'}
+    result = JSON.ObjectFromURL('http://auth.smoothstreams.tv/hash_api.php', values = postdata, encoding = 'utf-8', cacheTime = LOGIN_TIMEOUT_MINUTES * 100)
+    cdict["code"] = result["code"]
+    cdict["hash"] = result["hash"]
+    cdict["validUntil"] = datetime.datetime.now() + datetime.timedelta(minutes = LOGIN_TIMEOUT_MINUTES)
 
 @app.route('/lineup.post')
 def lineup_post():

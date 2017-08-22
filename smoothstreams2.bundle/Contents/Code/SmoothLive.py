@@ -131,7 +131,7 @@ def lineup():
         channelProxy(channelNum, pipeUrl)
         lineup.append({'GuideNumber': channelNum,
                            'GuideName': str(channelNum) + " " + channelName,
-                           'URL': '%s/auto/v%s' % str(channelNum)'
+                           'URL': '%s/auto/v%s' % config['sstvProxyURL'], str(channelNum)
                            })
     file.close()
         # print ({'GuideNumber': channelNum,

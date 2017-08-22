@@ -143,8 +143,7 @@ def lineup():
 
 @app.route('/auto/v<channelNum>')
 def channelProxy(channelNum):
-    url = cdict[channelNum]['pipeUrl']
-    return "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
+    return cdict[channelNum]['pipeUrl']
 
 @app.route('/lineup.post')
 def lineup_post():

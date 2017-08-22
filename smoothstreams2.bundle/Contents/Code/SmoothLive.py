@@ -128,23 +128,22 @@ def lineup():
         #pipeUrl = "ffmpeg -i $s -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352" % url
         #jobriens ffmpeg pipe
         pipeUrl = "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
+        channelProxy(channelNum, pipeUrl)
         lineup.append({'GuideNumber': channelNum,
                            'GuideName': str(channelNum) + " " + channelName,
-                           'URL': pipeUrl
+                           'URL': '%s/auto/v%s' % str(channelNum)'
                            })
     file.close()
         # print ({'GuideNumber': channelNum,
         #                    'GuideName': str(channelNum) + channelName,
         #                    'URL': url
         #                    })
-
-    #lineup.append({'GuideNumber': "1",
-    #                       'GuideName': "ESPNEWS",
-    #                       'URL':"http://dnaw1.smoothstreams.tv:9100/viewms/ch01q1.stream/playlist.m3u8?wmsAuthSign=c2VydmVyX3RpbWU9OC8yMC8yMDE3IDc6NDU6MDIgUE0maGFzaF92YWx1ZT1FanNiNVFmeEFNb211cVN6Zkl3c3JBPT0mdmFsaWRtaW51dGVzZpZD12aWV3bXMtMTUzNTk==="
-    #                       })
-
     return jsonify(lineup)
 
+@app.route('/auto/v1')
+def channelProxy():
+    url = ""
+    return "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
 
 @app.route('/lineup.post')
 def lineup_post():

@@ -128,8 +128,8 @@ def lineup():
         #random web pipe
         #pipeUrl = "ffmpeg -i $s -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352" % url
         #jobriens ffmpeg pipe
-        pipeUrl = "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
-        channelProxy(channelNum, pipeUrl)
+        cdict[channelNum]['pipeUrl'] = "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % cdict[channelNum]['url']
+
         lineup.append({'GuideNumber': channelNum,
                            'GuideName': str(channelNum) + " " + cdict[channelNum]['channelName'],
                            'URL': '%s/auto/v%s' % config['sstvProxyURL'], str(channelNum)
@@ -143,7 +143,7 @@ def lineup():
 
 @app.route('/auto/v<channelNum>')
 def channelProxy(channelNum):
-    url = cdict[channelNum]['url']
+    url = cdict[channelNum]['pipeUrl']
     return "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
 
 @app.route('/lineup.post')

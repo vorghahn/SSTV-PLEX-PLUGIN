@@ -122,10 +122,12 @@ def lineup():
                 channelEPG = item[9:-1]
         print (channelName)
         print (url)
+        #from: https://superuser.com/questions/835871/how-to-make-an-mpeg2-video-file-with-the-highest-quality-possible-using-ffmpeg
+        #pipeUrl = "ffmpeg -i $s -f lavfi -i aevalsrc=0 -shortest -c:v libx264 -profile:v baseline -crf 23 -c:a aac -strict experimental" %url
         #random web pipe
-        #ffmpeg -i url -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352
+        #pipeUrl = "ffmpeg -i $s -vcodec rawvideo -pix_fmt yuv420p -f rawvideo - | x264 --crf 18 -o test.mp4 --fps 25.0 - 640x352" % url
         #jobriens ffmpeg pipe
-        pipeUrl = "ffmpeg -i url -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1"
+        pipeUrl = "ffmpeg -i $s -codec copy -loglevel info -bsf:v h264_mp4toannexb -f mpegts -tune zerolatency pipe:1" % url
         lineup.append({'GuideNumber': channelNum,
                            'GuideName': str(channelNum) + " " + channelName,
                            'URL': pipeUrl

@@ -116,6 +116,10 @@ def lineup():
                 channelName = item[10:-1]
             elif "tvg-num" in item:
                 channelNum = item[9:-1]
+            elif "epg-id" in item:
+                channelEPGID = item[8:-1]
+            elif "url-epg" in item:
+                channelEPG = item[9:-1]
         print (channelName)
         print (url)
         #random web pipe

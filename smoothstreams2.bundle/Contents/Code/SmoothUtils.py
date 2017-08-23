@@ -82,6 +82,7 @@ def GetDstStart():
 	return datetime.datetime(nowdate.year, nowdate.month, delta,2,0,0,0)
 
 def GetServerUrlByName(serverLocation=None):
+	#list of servers
 	if serverLocation == 'EU Random':
 		return "deu.SmoothStreams.tv"
 	elif serverLocation == 'EU DE-Frankfurt':

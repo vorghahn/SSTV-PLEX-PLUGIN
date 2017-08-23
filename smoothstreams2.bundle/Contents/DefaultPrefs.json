@@ -3,7 +3,7 @@
 		"id": "serverLocation",
 		"type": "enum",
 		"label": "Select Server Location (NA/EU/Asia)",
-		"values": ["None", "EU Random","EU DE-Frankfurt","EU NL-EVO","EU NL-i3d","EU UK-London","EU UK-London1","EU UK-London2","US All","US East","US West","US East-NJ","US East-VA","US East-CAN","US East-CAN2","Asia"],
+		"values": ["None", "EU Random","EU DE-Frankfurt","EU NL","EU NL-1","EU NL-2","EU NL-3","EU UK-Random","EU UK-London1","EU UK-London2","US All","US East","US West","US West-LA","US West-SJ","US West-PHX","US Chi","US East-NJ","US East-VA","US East-CAN","US East-CAN2","US East-NY","Asia"],
 		"default": "None"
 	},
 	{

@@ -85,10 +85,14 @@ def GetServerUrlByName(serverLocation=None):
 	if serverLocation == 'EU Random':
 		return "deu.SmoothStreams.tv"
 	elif serverLocation == 'EU DE-Frankfurt':
-		return "deu.de1.SmoothStreams.tv"
-	elif serverLocation == 'EU NL-EVO':
+		return "deu.de.SmoothStreams.tv"
+	elif serverLocation == 'EU NL-3':
+		return "deu.nl3.SmoothStreams.tv"
+	elif serverLocation == 'EU NL-2':
 		return "deu.nl2.SmoothStreams.tv"
-	elif serverLocation == 'EU NL-i3d':
+	elif serverLocation == 'EU NL-1':
+		return "deu.nl1.SmoothStreams.tv"
+	elif serverLocation == 'EU NL':
 		return "deu.nl1.SmoothStreams.tv"
 	elif serverLocation == 'EU UK Random':
 		return "deu.uk.SmoothStreams.tv"
@@ -102,6 +106,14 @@ def GetServerUrlByName(serverLocation=None):
 		return "dnae.SmoothStreams.tv"
 	elif serverLocation == 'US West':
 		return "dnaw.SmoothStreams.tv"
+	elif serverLocation == 'US West-PHX':
+		return "dnaw1.SmoothStreams.tv"
+	elif serverLocation == 'US West-LA':
+		return "dnaw2.SmoothStreams.tv"
+	elif serverLocation == 'US West-SJ':
+		return "dnaw3.SmoothStreams.tv"
+	elif serverLocation == 'US Chi':
+		return "dnaw4.SmoothStreams.tv"
 	elif serverLocation == 'US East-NJ':
 		return "dnae1.SmoothStreams.tv"
 	elif serverLocation == 'US East-VA':
@@ -110,8 +122,10 @@ def GetServerUrlByName(serverLocation=None):
 		return "dnae3.SmoothStreams.tv"
 	elif serverLocation == 'US East-CAN2':
 		return "dnae4.SmoothStreams.tv"
+	elif serverLocation == 'US East-NY':
+		return "dnae6.SmoothStreams.tv"
 	elif serverLocation == 'Asia':
-		return "dsg.SmoothStreams.tv"
+		return "dap.SmoothStreams.tv"
 	else:
 		Log.Error('Invalid serverName passed to GetServerUrlByName ' + serverLocation)
 		return None

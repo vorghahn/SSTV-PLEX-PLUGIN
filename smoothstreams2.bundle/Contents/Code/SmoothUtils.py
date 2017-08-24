@@ -86,21 +86,21 @@ def GetServerUrlByName(serverLocation=None):
 	if serverLocation == 'EU Random':
 		return "deu.SmoothStreams.tv"
 	elif serverLocation == 'EU DE-Frankfurt':
-		return "deu.de.SmoothStreams.tv"
+		return "deu-de.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-3':
-		return "deu.nl3.SmoothStreams.tv"
+		return "deu-nl3.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-2':
-		return "deu.nl2.SmoothStreams.tv"
+		return "deu-nl2.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-1':
-		return "deu.nl1.SmoothStreams.tv"
+		return "deu-nl1.SmoothStreams.tv"
 	elif serverLocation == 'EU NL':
-		return "deu.nl1.SmoothStreams.tv"
+		return "deu-nl.SmoothStreams.tv"
 	elif serverLocation == 'EU UK Random':
-		return "deu.uk.SmoothStreams.tv"
+		return "deu-uk.SmoothStreams.tv"
 	elif serverLocation == 'EU UK-London1':
-		return "deu.uk1.SmoothStreams.tv"
+		return "deu-uk1.SmoothStreams.tv"
 	elif serverLocation == 'EU UK-London2':
-		return "deu.uk2.SmoothStreams.tv"
+		return "deu-uk2.SmoothStreams.tv"
 	elif serverLocation == 'US All':
 		return "dna.SmoothStreams.tv"
 	elif serverLocation == 'US East':

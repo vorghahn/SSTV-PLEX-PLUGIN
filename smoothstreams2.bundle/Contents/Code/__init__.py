@@ -34,7 +34,7 @@ PLUGIN_VERSION_LATEST = ''
 source = ''
 
 ART  = 'art-default.png'
-ICON = 'icon-default.png'
+ICON = 'Icon-Default.png'
 ####################################################################################################
 
 def Start():
@@ -75,13 +75,6 @@ def sourceType():
 	else:
 		Log.Debug('Using user settings for client: ' + str(Client.Platform))
 		Log.Debug('Source is ' + str(source))
-	Dict['source'] = source
-	if Prefs['quality'] == 'LQ':
-		Dict['quality'] = 3
-	elif Prefs['quality'] == 'HQ':
-		Dict['quality'] = 2
-	else:
-		Dict['quality'] = 1
 	return source
 
 ###################################################################################################
@@ -218,8 +211,6 @@ def SimpleStreams(url = None):
 						)
 					]
 					))
-			# Preferences
-			oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################
@@ -270,8 +261,6 @@ def SimpleStreamsNoEPG(url = None):
 				)
 			]
 			))
-		# Preferences
-		oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################
@@ -866,13 +855,14 @@ def CreateVideoClipObject(url, title, thumb = None, tagline = None, summary = No
 		thumb = thumb,
 		items = [
 			MediaObject(
-				#container = Container.MP4,		# MP4, MKV, MOV, AVI
-				#video_codec = VideoCodec.H264,	# H264
-				#audio_codec = AudioCodec.AAC,	# ACC, MP3
-				#audio_channels = 2,			# 2, 6
+				container=Container.MP4,	# MP4, MKV, MOV, AVI
+				bitrate = bitrate,
+				video_codec = VideoCodec.H264, # H264
+				video_resolution = video_resolution,
+				audio_codec = AudioCodec.AAC, # ACC, MP3
+				audio_channels = 2, # 2, 6
 				parts = [ PartObject(key = GetVideoURL(url = url), duration = 1000) ],
-				optimized_for_streaming = True
-			)
+				optimized_for_streaming = True ) for video_resolution, bitrate, version_id in [ (1080, 5000, 'hd1080'), (720, 3000, 'hd720'), (576, 1500, 'sd1500'), (576, 1200, 'sd1200'), (360, 900, 'sd900'), (360, 600, 'basic600') ]
 		]
 	)
 
@@ -961,9 +951,9 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  '20170724dev' #Resource.Load("version.txt", binary = False)
+		PLUGIN_VERSION =  '20170827' #Resource.Load("version.txt", binary = False)
 		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  '20170724dev' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST =  '20170827' #str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

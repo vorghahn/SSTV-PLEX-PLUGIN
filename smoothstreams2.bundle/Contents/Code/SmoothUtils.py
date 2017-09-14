@@ -82,25 +82,24 @@ def GetDstStart():
 	return datetime.datetime(nowdate.year, nowdate.month, delta,2,0,0,0)
 
 def GetServerUrlByName(serverLocation=None):
-	#list of servers
 	if serverLocation == 'EU Random':
 		return "deu.SmoothStreams.tv"
 	elif serverLocation == 'EU DE-Frankfurt':
-		return "deu.de.SmoothStreams.tv"
+		return "deu-de.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-3':
-		return "deu.nl3.SmoothStreams.tv"
+		return "deu-nl3.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-2':
-		return "deu.nl2.SmoothStreams.tv"
+		return "deu-nl2.SmoothStreams.tv"
 	elif serverLocation == 'EU NL-1':
-		return "deu.nl1.SmoothStreams.tv"
+		return "deu-nl1.SmoothStreams.tv"
 	elif serverLocation == 'EU NL':
-		return "deu.nl1.SmoothStreams.tv"
+		return "deu-nl.SmoothStreams.tv"
 	elif serverLocation == 'EU UK Random':
-		return "deu.uk.SmoothStreams.tv"
+		return "deu-uk.SmoothStreams.tv"
 	elif serverLocation == 'EU UK-London1':
-		return "deu.uk1.SmoothStreams.tv"
+		return "deu-uk1.SmoothStreams.tv"
 	elif serverLocation == 'EU UK-London2':
-		return "deu.uk2.SmoothStreams.tv"
+		return "deu-uk2.SmoothStreams.tv"
 	elif serverLocation == 'US All':
 		return "dna.SmoothStreams.tv"
 	elif serverLocation == 'US East':
@@ -133,7 +132,7 @@ def GetServerUrlByName(serverLocation=None):
 
 def GetServicePort(serviceName=None):
 	# Gets the port for HTML5 streaming
-
+	Log.Info('Service is ' + serviceName)
 	if serviceName is None:
 		Log.Error('No serviceName specified')
 		port = "80" # this will at least let ss server op log it if debugging on that end
@@ -164,18 +163,24 @@ def GetScheduleJson(OnlyGetNowPlaying=False, IgnorePast=False):
 		Dict['ScheduleUtcOffset'] = -5
 
 	parser = dateutil.parser()
+	
 	if Prefs['secureEPG']:
 		secureEPG = 'https'
 	else:
 		secureEPG = 'http'
+	Log.Info('HTTP type is ' + secureEPG)
+	
 	if Prefs['sportsOnly']:
+		Log.Info('Sports only')
 		scheduleFeedURL = secureEPG + '://iptvguide.netlify.com/iptv.json'
 		Dict['currentGuide'] = "Sports"
 		cacheSeconds = 1800 # cache for 30 minutes
 	else:
+		Log.Info('Not Sports only')
 		if Prefs['epg'] == 'iptv':
 			scheduleFeedURL = secureEPG + '://iptvguide.netlify.com/tv.json'
 		elif Prefs['epg'] == 'fogs':
+			secureEPG = 'http'
 			scheduleFeedURL = secureEPG + '://sstv.fog.pt/feedall1.json '
 		else:
 			scheduleFeedURL = secureEPG + '://speed.guide.smoothstreams.tv/feed.json'
@@ -280,13 +285,12 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 	#Log.Debug('HELP,Source is ' + str(source))
 	if checkQuality:
 		return GetChannelUrlByQuality(channelNum, True)
-# 	if Prefs['quality'] == 'LQ':
-# 		quality = 3
-# 	elif Prefs['quality'] == 'HQ':
-# 		quality = 2
-# 	else:
-# 		quality = 1
-	quality = Dict['quality']
+	if Prefs['quality'] == 'LQ':
+		quality = 3
+	elif Prefs['quality'] == 'HQ':
+		quality = 2
+	else:
+		quality = 1
 	numQuality = Prefs['numQuality']
 	if int(channelNum) > int(numQuality):
 		quality = 1
@@ -296,7 +300,7 @@ def GetFullUrlFromChannelNumber(channelNum, source, checkQuality = False):
 	else:
 		server = GetServerUrlByName(Prefs["serverLocation"])
 		servicePort = GetServicePort(Prefs['service'])
-	if Dict['source'] == "HLS":
+	if source == "HLS":
 		try:
 				channelUrl = 'https://%s:%s/%s/ch%sq%s.stream/playlist.m3u8?wmsAuthSign=%s' % (server, servicePort, SmoothAuth.getLoginSite(),'%02d' % int(channelNum), quality, Dict['SPassW'])
 		except:
@@ -322,7 +326,7 @@ def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, ch
 	if Prefs['showThumbs'] == False:
 		return None
 	else:
-		chanName = chanName.replace(" ", "").replace("720p", "")
+		chanName = chanName.split('- ', 1)[-1].replace(" ", "").replace("720p", "")
 		if chanNum == 0:
 			sChanNum = ""
 		else:

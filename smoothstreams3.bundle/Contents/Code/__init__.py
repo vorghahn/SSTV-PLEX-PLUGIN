@@ -154,7 +154,7 @@ def VideoMainMenu():
 
 			use_groups = False
 			for group in groups_list:
-				if group['title'] not in [unicode('All'), unicode('No category')]:
+				if group['title'] not in [unicode('All'), unicode('No category'), unicode('SSTV')]:
 					use_groups = True
 					break
 
@@ -304,164 +304,7 @@ def SimpleStreamsNoEPG():
 		)
 	return oc
 
-# ###################################################################################################
-#
-# @route(PREFIX + '/searchShows')
-# def SearchShows(query):
-# 	channelsDict = Dict['channelsDict']
-# 	showsListAll = Dict['showsList']
-# 	oc = ObjectContainer(title2 = "Search Results for {0}".format(query))
-# 	for i in range(1, 5):
-# 		if not channelsDict is None and not showsListAll is None:
-# 			break
-# 		Log.Info('sleeping 500ms for async schedule details to return')
-# 		Thread.Sleep(0.5)
-#
-# 	currentTime = SmoothUtils.getCurrentTimeNative()
-# 	summaryText = ''
-#
-# 	query = [x.strip().upper() for x in shlex.split(query)]
-# 	nowOnly = "NOW" in query
-# 	nextOnly = "NEXT" in query
-# 	if nowOnly: query.remove("NOW")
-# 	if nextOnly: query.remove("NEXT")
-# 	if nowOnly and nextOnly:
-# 		nextOnly = False
-#
-# 	showsList = []
-# 	for show in showsListAll:
-# 		keepShow = False
-# 		showName = show['name'].upper()
-# 		showCat = show['category'].replace(" ", "").upper()
-# 		showDesc = show['description'].upper()
-# 		startTime = SmoothUtils.GetDateTimeNative(show['time'])
-# 		endTime = SmoothUtils.GetDateTimeNative(show['end_time'])
-# 		if endTime >= currentTime and (not nowOnly or startTime <= currentTime):
-# 			if len(show['quality']) == 0:
-# 				show['quality'] = 'unk'
-# 			if startTime <= currentTime:
-# 				show['SORTER'] = "A" + show['name'] + show['time'] + show['quality']
-# 			else:
-# 				show['SORTER'] = "B" + show['time'] + show['name'] + show['quality']
-# 			if not nextOnly or (startTime > currentTime and startTime <= currentTime + datetime.timedelta(minutes = 90)):
-# 				if len(query) == 0:
-# 					keepShow = True
-# 				else:
-# 					for searchString in query:
-# 						if len(searchString) > 0 and (showCat == searchString or showName.find(searchString) > -1 or showDesc.find(searchString) > -1):
-# 							keepShow = True
-# 							break
-# 		if keepShow:
-# 			showsList += [show]
-#
-# 	showsList.sort(key = lambda x: (x['SORTER']))
-#
-# 	showCount = 0
-# 	lastShow = ""
-# 	for show in showsList:
-# 		channelNum = str(show['channel'])
-# 		channelItem = channelsDict[str(channelNum)]
-# 		channelName = channelItem.name.replace("720P", "HD")
-# 		titleText = formatShowText(channelItem, show, currentTime, "{when} {title} {qual} {lang} {time} ({cat}) {chname} #{ch}")
-# 		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
-# 		thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = False)
-# 		showCount += 1
-# 		tagLine = show['description']
-#
-# 		if not bestOnly or lastShow != show['time'] + show['name']:
-# 			if Prefs['channelDetails']:
-# 				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = titleText, tagline = SmoothUtils.fix_text(show['description']), thumb = thumb))
-# 			elif SmoothUtils.GetDateTimeNative(show['time']) < currentTime:
-# 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
-# 				oc.add(
-# 					CreateVideoClipObject(
-# 						url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
-# 						title=SmoothUtils.fix_text(titleText),
-# 						tagline=SmoothUtils.fix_text(tagLine),
-# 						summary=SmoothUtils.fix_text(summaryText),
-# 						studio=channelName,
-# 						thumb=thumbV,
-# 						optimized_for_streaming=True,
-# 						include_container=False  # True before though...
-# 					)
-# 				)
-# 			else:
-# 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
-# 				oc.add(CreateVideoClipObject(
-# 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&" + show['id'] + "&tm=" + str(show['time']).replace(" ", ""),
-# 					title = SmoothUtils.fix_text(titleText),
-# 					tagline = SmoothUtils.fix_text(show['description']),
-# 					summary = "",
-# 					thumb = thumbV
-# 				))
-# 		lastShow = show['time'] + show['name']
-#
-# 		if showCount == 100:
-# 			Log.Info('MAX SHOWS REACHED')
-# 			break
-#
-# 	return oc
 
-# ###################################################################################################
-# @route(PREFIX + '/channels')
-# def ChannelsMenu(url = None):
-# 	Log.Debug('Channels menu: Source is ' + str(source))
-# 	oc = ObjectContainer(title2 = "Channels")
-# 	Log.Info(PLUGIN_VERSION + ' ChannelsMenu')
-# 	channelsDict = Dict['channelsDict']
-# 	channelText = ''
-# 	currentTime = SmoothUtils.getCurrentTimeNative()
-#
-# 	for i in range(1, 5):
-# 		if not channelsDict is None:
-# 			break
-# 		Log.Info('sleeping 500ms for async schedule details to return')
-# 		Thread.Sleep(0.5)
-#
-# 	for channelNum in range(1, MAX_CHAN + 1):
-# 		if not channelsDict is None and str(channelNum) in channelsDict:
-# 			channelItem = channelsDict[str(channelNum)]
-# 			channelName = channelItem.name.replace("720P", "HD")
-# 			nowPlaying = channelItem.NowPlaying()
-# 			upcoming = channelItem.Upcoming()
-# 			if not upcoming is None and len(upcoming) > 0:
-# 				upcoming = upcoming[0]
-#
-# 			if nowPlaying is None:
-# 				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname}")
-# 				category = ""
-# 				tagLine = ""
-# 			else:
-# 				titleText = formatShowText(channelItem, nowPlaying, currentTime, "#{ch} {chname} {title} {qual} {lang} {time} ({cat})")
-#
-# 				category = nowPlaying['category']
-# 				tagLine = nowPlaying['description']
-#
-# 			if upcoming is None or len(upcoming) == 0:
-# 				summaryText = ""
-# 			else:
-# 				summaryText = formatShowText(channelItem, upcoming, currentTime, "{when} {title} {qual} {lang} {time} ({cat})")
-#
-# 			thumb = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = False) #, chanFirst = True
-#
-# 			if Prefs['channelDetails']:
-# 				channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)
-# 				oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = channelNum), title = SmoothUtils.fix_text(titleText), thumb = thumb))
-# 			else:
-# 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = category, large = True) #, chanFirst = True
-# 				oc.add(
-# 					CreateVideoClipObject(
-# 						url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
-# 						title=SmoothUtils.fix_text(titleText),
-# 						tagline=SmoothUtils.fix_text(tagLine),
-# 						summary=SmoothUtils.fix_text(summaryText),
-# 						studio=channelName,
-# 						thumb=thumbV,
-# 						optimized_for_streaming=True,
-# 						include_container=False  # True before though...
-# 					)
-# 				)
-# 	return oc
 # ###################################################################################################
 # @route(PREFIX + '/live')
 # def LiveMenu(url = None):
@@ -694,101 +537,7 @@ def SimpleStreamsNoEPG():
 # 		oc.add(NextPageObject(key = Callback(ScheduleListMenu, startIndex = int(endIndex)), title = "Next Page", thumb = 'more.png'))
 #
 # 	return oc
-# #################################################################################################
-# @route(PREFIX + '/channels/playmenu')
-# def PlayMenu(url = None, channelNum = None):
-# 	### This is the detailed PLAY menu after a channel has been selected which shows NOW PLAYING, and then the shows that will be on later
-# 	Log.Info(PLUGIN_VERSION + ' PlayMenu with Url ' + url)
-# 	oc = ObjectContainer(title1 = 'Channel ' + channelNum)
-# 	title = channelNum
-# 	addedItems = False
-# 	channelsDict = Dict['channelsDict']
-# 	currentTime = SmoothUtils.getCurrentTimeNative()
-#
-# 	if not channelsDict is None and not channelsDict[str(channelNum)] is None:
-# 		channel = channelsDict[str(channelNum)]
-# 		title = channel.name
-# 		upcomingShows = channel.Upcoming()
-# 		oc.title1 = title
-# 		channelItem = channelsDict[str(channelNum)]
-# 		channelName = channelItem.name.replace("720P", "HD")
-# 		channelText = SmoothUtils.fix_text(channelItem.GetStatusText())
-# 		channelText1 = SmoothUtils.fix_text(channelItem.GetStatusText1())
-# 		channelText2 = SmoothUtils.fix_text(channelItem.GetStatusText2())
-# 		channelText3 = SmoothUtils.fix_text(channelItem.GetStatusText3())
-#
-# 		if not upcomingShows is None and len(upcomingShows) > 0:
-# 			nowPlaying = channel.NowPlaying()
-# 			if nowPlaying is None:
-# 					thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = "", large = True)
-# 					oc.add(VideoClipObject(
-# 					key = Callback(CreateVideoClipObject,
-# 						url = HTTPLiveStreamURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)),
-# 						title = SmoothUtils.fix_text(channelText),
-# 						thumb = thumbV,
-# 						container = True),
-# 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
-# 					title = formatShowText(channelItem, None, currentTime, "{ch} {chname}"),
-# 					thumb = thumbV,
-# 					items = [
-# 						MediaObject(
-# 							parts = [ PartObject( key = HTTPLiveStreamURL(url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
-# 							optimized_for_streaming = True
-# 						)
-# 					]
-# 					))
-# 			else:
-# 				# we only get here if we couldn't get any schedule info
-# 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = nowPlaying['category'], large = True)
-# 				oc.add(
-# 					CreateVideoClipObject(
-# 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
-# 					title = formatShowText(channelItem, nowPlaying, currentTime, "{title} {lang} ({qual}) {time}"),
-# 					tagline = SmoothUtils.fix_text(nowPlaying['description']),
-# 					thumb = thumbV
-# 					)
-# 				)
-# 			for show in upcomingShows:
-# 				tagLine = show['description']
-# 				thumbV = SmoothUtils.GetChannelThumb(chanNum = int(channelNum), chanName = channelName, category = show['category'], large = True)
-# 				oc.add(
-# 					CreateVideoClipObject(
-# 					url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&" + show['id'],
-# 					title = formatShowText(channelItem, show, currentTime, "{when}: {title} {lang} ({qual}) {time}"),
-# 					tagline = SmoothUtils.fix_text(tagLine),
-# 					summary = "",
-# 					thumb = thumbV
-# 					)
-# 				)
-#
-# 			addedItems = True
-#
-# 	if not addedItems:
-# 		oc.title1 = title
-# 		oc.add(CreateVideoClipObject(
-# 				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
-# 				title = SmoothUtils.fix_text(('WATCH: ' + title).encode("iso-8859-1")),
-# 				thumb = None
-# 			))
-# 	try:
-# 		# add browse options for Next/Prev channel
-# 		prevChan = int(channelNum) - 1
-# 		if prevChan < MIN_CHAN:
-# 			prevChan = MAX_CHAN
-# 		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(prevChan)
-# 		oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = prevChan), title = ('/\\ ' + channelsDict[str(prevChan)].GetStatusText()).encode("iso-8859-1")))
-#
-# 		nextChan = int(channelNum) + 1
-# 		if nextChan > MAX_CHAN:
-# 			nextChan = MIN_CHAN
-# 		channelUrl = SmoothUtils.GetFullUrlFromChannelNumber(nextChan)
-# 		oc.add(DirectoryObject(key = Callback(PlayMenu, url = channelUrl, channelNum = nextChan), title = ('\\/ ' + channelsDict[str(nextChan)].GetStatusText()), thumb = R(channelText2 + '.png')))
-# 	except Exception, e:
-# 		Log.Error('Could not add next/prev chan browse options')
-# 		Log.Error(str(e))
-# 		Log.Error(traceback.print_exc())
-#
-# 	return oc
+
 ###############################################################################################
 
 @route(PREFIX + '/searchlistitems')
@@ -809,9 +558,7 @@ def SearchListItems(group = unicode('All'), query = ''):
 				)
 	channels_list = Dict['streams'].get(group, dict()).values()
 	guide = Dict['guide']
-	# sums_list = [GetSummary(channel['id'], channel['name'], channel['title'], unicode(L('No description available'))) for channel in items_list]
-	# refined_items_list = filter(lambda channel: query.lower() in GetSummary(channel['id'], channel['name'], channel['title'], unicode(L('No description available'))).lower(), sums_list)
-	# Log.Info(refined_items_list)
+
 	current_datetime = Datetime.Now()
 	oc = ObjectContainer(title1=unicode(L('Search')))
 	now = []
@@ -849,8 +596,8 @@ def SearchListItems(group = unicode('All'), query = ''):
 				time_filtered_list = [program for program in items_list if
 									  program['start'] <= current_datetime + Datetime.Delta(hours=guide_hours) and
 									  program['stop'] > current_datetime]
+				time_filtered_list.sort(key=lambda x: (x['start']))
 				for program in time_filtered_list:
-
 					if program['title'] and query.lower() in program['title'].lower():
 						new_chan = copy.deepcopy(channel)
 						new_chan['title'] = program['title']

@@ -1,0 +1,116 @@
+[
+	{
+		"id": "serverLocation",
+		"type": "enum",
+		"label": "Select Server Location (NA/EU/Asia)",
+		"values": ["None", "EU Random","EU DE-Frankfurt","EU NL","EU NL-1","EU NL-2","EU NL-3","EU UK-Random","EU UK-London1","EU UK-London2","US All","US East","US West","US West-LA","US West-SJ","US West-PHX","US Chi","US East-NJ","US East-VA","US East-CAN","US East-CAN2","US East-NY","Asia","Asia Old"],
+		"default": "None"
+	},
+	{
+		"id": "customServer",
+		"type": "text",
+		"label": "Custom Server (overrides above)",
+		"default": ""
+	},
+	{
+		"id": "username",
+		"type": "text",
+		"label": "User Name",
+		"default": ""
+	},
+	{
+		"id": "password",
+		"type": "text",
+		"option": "hidden",
+		"label": "Password",
+		"default": ""
+	},
+	{
+		"id": "service",
+		"type": "enum",
+		"label": "Service",
+		"values": ["None","MyStreams","Live247","StarStreams","StreamTVNow","MMA-TV/MyShout","MMA SR+"],
+		"default": "None"
+	},
+	{
+		"id": "simple",
+		"type": "enum",
+		"label": "Simple (Channel List Only",
+		"values": ["No","Yes","Yes (No EPG)"],
+		"default": "No"
+	},
+	{
+		"id": "mySearch",
+		"type": "text",
+		"label": " My Search",
+		"default": "NFL;NHL;NBA;WorldFootball"
+	},
+	{
+		"id": "quality",
+		"type": "enum",
+		"label": "Stream Quality (Select channels only)",
+		"values": ["LQ","HQ","HD"],
+		"default": "LQ"
+	},
+	{
+		"id": "numQuality",
+		"type": "text",
+		"label": "Number of Channels that carry multiple qualities",
+		"default": "60"
+	},
+	{
+		"id": "sourcetype",
+		"type": "enum",
+		"label": "HLS or RTMP",
+		"values": ["HLS","RTMP"],
+		"default": "HLS"
+	},
+	{
+		"id": "hlsClient",
+		"type": "text",
+		"label": "If client requires HLS streams to operate enter add it here",
+		"default": "tvOS"
+	},
+	{
+		"id": "rtmpClient",
+		"type": "text",
+		"label": "If client requires RTMP streams to operate enter add it here",
+		"default": "Konvergo"
+	},
+	{
+		"id": "sportsOnly",
+		"type": "bool",
+		"label": "Sports Only? (Only show sports guide)",
+		"default": "True"
+	},
+	{
+		"id": "pageCount",
+		"type": "text",
+		"label": "Items Per Page",
+		"default": "50"
+	},
+	{
+		"id": "guide_hours",
+		"type": "text",
+		"label": "Guide hours to look ahead",
+		"default": "48"
+	},
+	{
+		"id":       "playlist",
+		"label":    "Playlist file name or URL, multiple entries can be entered separated with semicolon (please keep in mind that default file playlist.m3u will be overwritten on update)",
+		"type":     "text",
+		"default":  "playlist.m3u"
+	},
+	{
+		"id":       "filename_groups",
+		"label":    "Use filename as group name if group-title attribute is not provided",
+		"type":     "bool",
+		"default":  "false"
+	},
+	{
+		"id":       "xmltv",
+		"label":    "XMLTV file name or URL, multiple entries can be entered separated with semicolon",
+		"type":     "text",
+		"default":  ""
+	}
+]

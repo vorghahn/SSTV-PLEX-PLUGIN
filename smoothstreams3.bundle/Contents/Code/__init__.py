@@ -236,7 +236,7 @@ def SimpleStreams():
 	oc = ObjectContainer()
 	Log.Debug('SimpleStreams menu: Source is ' + str(Dict['source']))
 	#oc = ObjectContainer(title2 = "Channels")
-	Log.Info(PLUGIN_VERSION + ' SimpleStreams')
+	Log.Info(str(PLUGIN_VERSION) + ' SimpleStreams')
 	channelsDict = Dict['channelsDict']
 	currentTime = SmoothUtils.getCurrentTimeNative()
 
@@ -289,7 +289,7 @@ def SimpleStreams():
 def SimpleStreamsNoEPG():
 	oc = ObjectContainer()
 	Log.Debug('SimpleStreamsNoEPG menu: Source is ' + str(Dict['source']))
-	Log.Info(PLUGIN_VERSION + ' SimpleStreamsNoEPG')
+	Log.Info(str(PLUGIN_VERSION) + ' SimpleStreamsNoEPG')
 
 	for channelNum in range(1, int(Prefs['numChannels']) + 1):
 		oc.add(

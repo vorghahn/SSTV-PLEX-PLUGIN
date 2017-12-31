@@ -84,6 +84,12 @@
 		"default": "True"
 	},
 	{
+		"id": "numChannels",
+		"type": "text",
+		"label": "Number of channels(SimpleStreams only)",
+		"default": "150"
+	},
+	{
 		"id": "pageCount",
 		"type": "text",
 		"label": "Items Per Page",

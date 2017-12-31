@@ -55,7 +55,7 @@ def LoadM3UFile(m3u_file, groups = {}, streams = {}, cust_m3u_name = None):
 			playlist = Resource.Load(m3u_file, binary = True)
 
 		if playlist:
-			stream_count = len(streams)
+			stream_count = len(streams[u'All'])
 			lines = playlist.splitlines()
 			line_count = len(lines)
 			for i in range(line_count - 1):
@@ -136,7 +136,6 @@ def LoadM3UFile(m3u_file, groups = {}, streams = {}, cust_m3u_name = None):
 								break
 					if url:
 						LoadM3UFile(m3u_file = url, groups = groups, streams = streams, cust_m3u_name = group_title)
-
 ####################################################################################################
 def DecodeURIComponent(uri):
 

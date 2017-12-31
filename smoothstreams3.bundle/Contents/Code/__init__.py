@@ -6,7 +6,6 @@
 #
 ###################################################################################################
 import sys
-import datetime
 import SmoothUtils
 import SmoothAuth
 import time
@@ -26,7 +25,7 @@ MAX_CHAN = 150 # changed this to a preference
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = ''
+PLUGIN_VERSION = 0.1
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
@@ -188,7 +187,7 @@ def VideoMainMenu():
 					)
 			else:
 				oc.add(DirectoryObject(key=Callback(ListItems), title="Channels",
-				                       thumb=SmoothUtils.GetChannelThumb(chanName="Channels"), summary="Channel List"))
+				                       thumb=R('Icon-Default.png'), summary="Channel List"))
 
 
 
@@ -992,11 +991,10 @@ def getLatestVersion():
 	try:
 		global PLUGIN_VERSION
 		global PLUGIN_VERSION_LATEST
-
+		vers_url = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents/Resources/version.txt"
 		# Disable version checking against original project.
-		PLUGIN_VERSION =  Resource.Load("version.txt", binary = False)
-		commitHash = JSON.ObjectFromURL("https://api.bitbucket.org/2.0/repositories/vorghahn/sstv-plex-plugin/commits", cacheTime = 43200)["values"][0]["hash"]
-		PLUGIN_VERSION_LATEST =  str(JSON.ObjectFromURL("https://bitbucket.org/vorghahn/sstv-plex-plugin/raw/" + commitHash + "/smoothstreams2.bundle/Contents/Resources/version.txt", cacheTime = 43200))
+		PLUGIN_VERSION_LATEST = JSON.ObjectFromURL(vers_url, encoding = 'utf-8')['Version']
+
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
 		else:

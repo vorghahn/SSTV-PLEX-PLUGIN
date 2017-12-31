@@ -105,7 +105,7 @@ def ValidatePrefs():
 #################################################################################################
 @handler(PREFIX, NAME, thumb = ICON, art = ART)
 def VideoMainMenu():
-	Log.Info(PLUGIN_VERSION + ' VideoMainMenu called: ')
+	Log.Info(str(PLUGIN_VERSION) + ' VideoMainMenu called: ')
 	oc = ObjectContainer()
 
 	if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
@@ -159,7 +159,7 @@ def VideoMainMenu():
 
 			if use_groups:
 				groups_list.sort(key=lambda d: d['order'])
-				oc = ObjectContainer(title1=unicode(L('View playlist')))
+				oc = ObjectContainer(title1=unicode(L(NAME)) + updateAvailable)
 				oc.add(
 					DirectoryObject(
 						key=Callback(ListItems, group=unicode('All')),
@@ -993,12 +993,12 @@ def getLatestVersion():
 		global PLUGIN_VERSION_LATEST
 		vers_url = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents/Resources/version.txt"
 		# Disable version checking against original project.
-		PLUGIN_VERSION_LATEST = JSON.ObjectFromURL(vers_url, encoding = 'utf-8')['Version']
+		PLUGIN_VERSION_LATEST = float(JSON.ObjectFromURL(vers_url, encoding = 'utf-8')['Version'])
 
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
-			Log.Info("OUT OF DATE " + PLUGIN_VERSION + " < " + PLUGIN_VERSION_LATEST)
+			Log.Info("OUT OF DATE " + str(PLUGIN_VERSION) + " < " + PLUGIN_VERSION_LATEST)
 		else:
-			Log.Info("UP TO DATE " + PLUGIN_VERSION + " >= " + PLUGIN_VERSION_LATEST)
+			Log.Info("UP TO DATE " + str(PLUGIN_VERSION) + " >= " + PLUGIN_VERSION_LATEST)
 	except:
 		Log.Info("Version check failed")
 		pass

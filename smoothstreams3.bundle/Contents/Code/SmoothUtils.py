@@ -315,12 +315,6 @@ def GetFullUrlFromChannelNumber(channelNum):
 	return url_template.format(Dict['source'],Dict['server'],Dict['port'],Dict['service'],'%02d' % int(channelNum), quality, Dict['sourceext'], Dict['SPassW'])
 
 
-# def GetChannelSummaryText(channelInfo=None):
-# 	if Prefs['showThumbs']==False:
-# 		return None
-# 	else:
-# 		return channelInfo
-
 def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, chanFirst = False):
 	if False: #Prefs['showThumbs'] == False:
 		return None
@@ -350,163 +344,9 @@ def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, ch
 			thumb = fallBack
 		return thumb
 
-# def GetShowTimeText(show):
-# 	timeString = u''
-#
-# 	parser = dateutil.parser()
-# 	startTime = GetDateTimeNative(show['time'])
-# 	endTime = GetDateTimeNative(show['end_time'])
-#
-# 	timeString += str(int(startTime.strftime('%I'))) + startTime.strftime(':%M').replace(":00", "")
-# 	if (startTime.hour <= 12 and endTime.hour > 11) or (startTime.hour > 12 and endTime.hour <= 12):
-# 		timeString += startTime.strftime('%p')[:1]
-#
-# 	timeString += "-" + str(int(endTime.strftime('%I'))) + endTime.strftime(':%M').replace(":00", "") + endTime.strftime('%p')[:1]
-#
-# 	return timeString
-#
-# def IsShowNowPlaying(show):
-# 	try:
-# 		parser = dateutil.parser()
-# 		currentTime = getCurrentTimeNative()
-# 		endTime = GetDateTimeNative(show['end_time'])
-# 		startTime = GetDateTimeNative(show['time'])
-# 		return startTime <= currentTime <= endTime
-# 	except:
-# 		return False
-#
-# class SsChannel:
-# 	''' Exposes features useful for a specific channel and its shows '''
-# 	def __init__(self, id, name, items):
-# 		self.channel_id = id
-# 		self.name = name
-# 		self.items = items
-#
-# 	def NowPlaying(self):
-# 		parser = dateutil.parser()
-# 		currentTime = getCurrentTimeNative()
-#
-# 		if not self.items is None:
-# 			for item in self.items:
-# 				endTime = GetDateTimeNative(item['end_time'])
-# 				startTime = GetDateTimeNative(item['time'])
-#
-# 				if startTime <= currentTime <= endTime:
-# 					return item
-#
-# 	def Upcoming(self):
-# 		parser = dateutil.parser()
-# 		currentTime = getCurrentTimeNative()
-#
-# 		if not self.items is None:
-# 			results = []
-# 			for item in self.items:
-# 				endTime = GetDateTimeNative(item['end_time'])
-# 				startTime = GetDateTimeNative(item['time'])
-# 				if startTime >= currentTime and endTime > currentTime:
-# 					results.append(item)
-#
-# 			results.sort(key = lambda x: (x['time']))
-# 			return results
-#
-# 	def GetChannel(self):
-# 		try:
-# 			if self.NowPlaying() is None:
-# 				return self.name
-# 			else:
-# 				nowPlaying = self.NowPlaying()
-# 				if "language" in nowPlaying and nowPlaying['language'].upper() != "US":
-# 					language = ' ' + nowPlaying['language'].upper()
-# 				return self.name + ': ' + nowPlaying['name'] + ' ' + nowPlaying['quality'] + language + ' ' + GetShowTimeText(nowPlaying) + u' (' + nowPlaying['category'] + u')'
-# 		except:
-# 			return ""
-#
-# 	def GetStatusText(self):
-# 		#returns status of either what's currently playing or what's next
-# 		language = ""
-#
-# 		try:
-# 			if self.NowPlaying() is None:
-# 				if self.Upcoming() is None or len(self.Upcoming())==0:
-# 					return self.name
-# 				else:
-# 					upcoming = self.Upcoming()[0]
-# 					if "language" in upcoming and upcoming['language'].upper() != "US":
-# 						language = ' ' + upcoming['language'].upper()
-# 					#return self.name
-# 					return "NEXT " + self.name + ': ' + upcoming['name'] + ' ' + upcoming['quality'] + language + ' ' + GetShowTimeText(upcoming) + u' (' + upcoming['category'] + u')'
-# 			else:
-# 				nowPlaying = self.NowPlaying()
-# 				if "language" in nowPlaying and nowPlaying['language'].upper() != "US":
-# 					language = ' ' + nowPlaying['language'].upper()
-# 				return "LIVE " + self.name + ': ' + nowPlaying['name'] + ' ' + nowPlaying['quality'] + language + ' ' + GetShowTimeText(nowPlaying) + u' (' + nowPlaying['category'] + u')'
-# 		except:
-# 			return ""
-#
-# 	def GetStatusText1(self):
-# 		#returns status of either what's currently playing or what's next
-# 		language = ""
-#
-# 		try:
-# 			if self.NowPlaying() is None:
-# 				if self.Upcoming() is None or len(self.Upcoming())==0:
-# 					return self.name
-# 				else:
-# 					upcoming = self.Upcoming()[0]
-# 					if "language" in upcoming and upcoming['language'].upper() != "US":
-# 						language = ' ' + upcoming['language'].upper()
-# 					return "NEXT " + upcoming['network'] + ': ' + upcoming['name'] + ' ' + upcoming['quality'] + language + GetShowTimeText(upcoming)
-# 			else:
-# 				nowPlaying = self.NowPlaying()
-# 				if "language" in nowPlaying and nowPlaying['language'].upper() != "US":
-# 					language = ' ' + nowPlaying['language'].upper()
-# 				return "LIVE " + (u'%02d ' % int(self.channel_id)) + ' ' + nowPlaying['name'] + ' ' + nowPlaying['quality'] + language + GetShowTimeText(nowPlaying) + u' (' + nowPlaying['category'] + u')'
-# 		except:
-# 			return ""
-#
-# 	def GetStatusText2(self):
-# 		#returns status of either what's currently playing or what's next
-# 		if self.NowPlaying() is None:
-# 			if self.Upcoming() is None or len(self.Upcoming())==0:
-# 				return "C" + (u'%02d' % int(self.channel_id))
-# 			else:
-# 				upcoming = self.Upcoming()[0]
-# 				return "C" + (u'%02d' % int(self.channel_id))
-# 		else:
-# 			nowPlaying = self.NowPlaying()
-# 			return "C" + (u'%02d' % int(self.channel_id))
-#
-# 	def GetStatusText3(self):
-# 		#returns status of either what's currently playing or what's next
-# 		language = ""
-#
-# 		try:
-# 			if self.NowPlaying() is None:
-# 				if self.Upcoming() is None or len(self.Upcoming())==0:
-# 					return fix_text(self.name)
-# 				else:
-# 					upcoming = self.Upcoming()[0]
-# 					if "language" in upcoming and upcoming['language'].upper() != "US":
-# 						language = ' ' + upcoming['language'].upper()
-# 					return 'NEXT: ' + fix_text(GetShowTimeText(upcoming) + ' ' + upcoming['name'] + ' ' + upcoming['quality'] + language)
-# 			else:
-# 				nowPlaying = self.NowPlaying()
-# 				if "language" in nowPlaying and nowPlaying['language'].upper() != "US":
-# 					language = ' ' + nowPlaying['language'].upper()
-# 				return "LIVE " + fix_text((u'%02d ' % int(self.channel_id)) + ' ' + nowPlaying['name'] + ' ' + nowPlaying['quality'] + language + GetShowTimeText(nowPlaying) + u' (' + nowPlaying['category'] + u')')
-# 		except:
-# 			return ""
-#
-# 	def GetStatusText4(self):
-# 		#returns status of either what's currently playing or what's next
-# 		if self.NowPlaying() is None:
-# 			return "E " + fix_text(self.name)
-# 		#else:
-# 		#	nowPlaying = self.NowPlaying()
-# 		#	return fix_text((u'%02d ' % int(self.channel_id)) + '- ' + nowPlaying['name'] + ' ' + nowPlaying['quality'] + GetShowTimeText(nowPlaying) + u' (' + nowPlaying['category'] + u')')
 
 def build_channel_map():
-	Dict['groups'] = {u'SSTV': {'order': 1, 'art': u'', 'thumb': u'Icon-Default.png', 'title': u'SSTV'}}
+	Dict['groups'] = {u'SSTV': {'order': 1, 'art': u'art-default.jpg', 'thumb': u'Icon-Default.png', 'title': u'SSTV'}}
 	streams = {}
 	thumb = "http://speed.guide.smoothstreams.tv/assets/images/channels/{0}.png"
 	group_title=u'SSTV'
@@ -726,8 +566,6 @@ def GuideReloader():
 	while True:
 		if not Dict['last_guide_load_datetime']:
 			LoadXMLTV()
-			# if Prefs['xmltv'] != '':
-			# 	LoadGuide()
 		else:
 			current_datetime = datetime.datetime.utcnow()
 			cur_utc_hr = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0).hour
@@ -735,8 +573,6 @@ def GuideReloader():
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_guide_load_datetime']:
 				LoadXMLTV()
-				# if Prefs['xmltv'] != '':
-				# 	LoadGuide()
 		Thread.Sleep(10)
 
 def PlaylistReload():

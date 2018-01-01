@@ -20,6 +20,9 @@ from threading import Thread
 THUMB_URL = 'https://guide.smoothstreams.tv/assets/images/channels/150.png'
 GUIDE_CACHE_MINUTES = 10
 
+sports_list = ['sports','motorsport','americanfootball',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash","cricket"]
+
+
 def fix_text(text):
 	def fixup(m):
 		text = m.group(0)
@@ -430,6 +433,9 @@ def LoadXMLTV():
 	channels = {}
 	icons = {}
 	guide = {}
+	genres = {}
+	genres['sports']  = []
+	genres['all'] = []
 	full_xmltv = 'https://sstv.fog.pt/epg/xmltv3.xml.gz'
 	sports_xmltv = 'https://fast-guide.smoothstreams.tv/feed.xml'
 
@@ -510,12 +516,51 @@ def LoadXMLTV():
 							desc = None
 					else:
 						desc = None
+					if programme_elem.find('category'):
+						genre_text = programme_elem.find('category').text
+						if genre_text:
+							try:
+								genre = unicode(desc_text, errors = 'replace')
+							except TypeError:
+								genre = desc_text.decode('utf-8')
+						else:
+							genre = None
+					else:
+						if 'nba' in title.lower() or 'nba' in title.lower() or 'ncaam' in title.lower():
+							genre = "Basketball"
+						elif 'nfl' in title.lower() or 'football' in title.lower() or 'american football' in title.lower() or 'ncaaf' in title.lower() or 'cfb' in title.lower():
+							genre = "AmericanFootball"
+						elif 'epl' in title.lower() or 'efl' in title.lower() or 'soccer' in title.lower() or 'ucl' in title.lower() or 'mls' in title.lower() or 'uefa' in title.lower() or 'fifa' in title.lower() or 'fc' in title.lower() or 'la liga' in title.lower() or 'serie a' in title.lower() or 'wcq' in title.lower():
+							genre = "Soccer"
+						elif 'rugby' in title.lower() or 'nrl' in title.lower() or 'afl' in title.lower():
+							genre = "Rugby"
+						elif 'cricket' in title.lower() or 't20' in title.lower():
+							genre = "Cricket"
+						elif 'tennis' in title.lower() or 'squash' in title.lower() or 'atp' in title.lower():
+							genre = "Tennis/Squash"
+						elif 'f1' in title.lower() or 'nascar' in title.lower() or 'motogp' in title.lower() or 'racing' in title.lower():
+							genre = "MotorSport"
+						elif 'golf' in title.lower() or 'pga' in title.lower():
+							genre = "Golf"
+						elif 'boxing' in title.lower() or 'mma' in title.lower() or 'ufc' in title.lower() or 'wrestling' in title.lower() or 'wwe' in title.lower():
+							genre = "Martial Sports"
+						elif 'hockey' in title.lower() or 'nhl' in title.lower() or 'ice hockey' in title.lower():
+							genre = "Ice Hockey"
+						elif 'baseball' in title.lower() or 'mlb' in title.lower() or 'beisbol' in title.lower() or 'minor league' in title.lower():
+							genre = "Baseball"
+						else:
+							genre = None
+					if genre and not genre in genres['all']:
+						genres['all'].append(genre)
+						if genre.lower() in sports_list:
+							genres['sports'].append(genre)
 					count = count + 1
 					item = {
 						'start': start,
 						'stop': stop,
 						'title': title,
 						'desc': desc,
+						'genre': genre,
 						'order': count
 					}
 					guide.setdefault(channel, {})[count] = item
@@ -532,6 +577,7 @@ def LoadXMLTV():
 		xmltv = open_xmltv(xmltv_file)
 		process_xmltv(xmltv, xmltv_file)
 
+	Dict['genres'] = genres
 	Dict['channels'] = channels
 	Dict['icons'] = icons
 	Dict['guide'] = guide

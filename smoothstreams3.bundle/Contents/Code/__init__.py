@@ -19,18 +19,21 @@ Smoothstreams_URL = 'http://www.Smoothstreams.com'
 Smoothstreams_URL1 = 'http://a.video.Smoothstreams.com/'
 BASE_URL = 'http://www.Smoothstreams.com/videos'
 
-MIN_CHAN = 1 # probably a given
-MAX_CHAN = 150 # changed this to a preference
-
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.1
+PLUGIN_VERSION = 0.2
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
+# Changelist
+# 0.2 - Addition of schedule menu items
+# 0.1 - Initial
+
 ART  = 'art-default.png'
 ICON = 'Icon-Default.png'
+
+sports_list = ['sports','motorsport','american football',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash"]
 
 ####################################################################################################
 
@@ -194,7 +197,7 @@ def VideoMainMenu():
 			# oc.add(DirectoryObject(key = Callback(LiveMenu), title = "Live Sports", thumb = SmoothUtils.GetChannelThumb(chanName = "Live Sports"), summary = "Live shows"))
 
 			# oc.add(DirectoryObject(key = Callback(CategoriesMenu), title = "Categories", thumb = SmoothUtils.GetChannelThumb(chanName = "Categories"), summary = "Category List"))
-			# oc.add(DirectoryObject(key = Callback(ScheduleListMenu), title = "Schedule Sports", thumb = SmoothUtils.GetChannelThumb(chanName = "Schedule Sports"), summary = "Schedule List"))
+			oc.add(DirectoryObject(key = Callback(SearchListItems, query = 'schedule'), title = "Schedule Sports", thumb = SmoothUtils.GetChannelThumb(chanName = "Schedule"), summary = "Schedule List"))
 
 			# TODO: add custom categories
 			if not Prefs['mySearch'] is None and len(Prefs['mySearch']) > 2:
@@ -361,28 +364,26 @@ def SimpleStreamsNoEPG():
 # 				)
 #
 # 	return oc
-# #################################################################################################
-# @route(PREFIX + '/categories')
-# def CategoriesMenu():
-# 	Log.Info(PLUGIN_VERSION + " CategoriesMenu")
-# 	oc = ObjectContainer(title2 = "Categories")
-# 	Log.Info('Categories')
-# 	channelsDict = Dict['channelsDict']
-# 	categoryDict = Dict['categoryDict']
-# 	channelText = ''
-#
-# 	for i in range(1, 5):
-# 		Log.Info('sleeping 500ms for async schedule details to return')
-# 		Thread.Sleep(0.5)
-# 		if not channelsDict is None and not categoryDict is None:
-# 			break
-#
-# 	for category in sorted(categoryDict):
-# 		thumb = SmoothUtils.GetChannelThumb(category = category, large = False)
-# 		oc.add(DirectoryObject(key = Callback(CategoryMenu, url = category), title = category, thumb = thumb))
-#
-# 	return oc
-# #################################################################################################
+#################################################################################################
+@route(PREFIX + '/categories')
+def CategoriesMenu():
+	Log.Info(str(PLUGIN_VERSION) + " CategoriesMenu")
+	oc = ObjectContainer(title2 = "Categories")
+	Log.Info('Categories')
+	categoryDict = Dict['genres']['sports']
+
+	for i in range(1, 5):
+		if not categoryDict is None and not categoryDict is None:
+			break
+		Log.Info('sleeping 500ms for async schedule details to return')
+		Thread.Sleep(0.5)
+
+	for category in sorted(categoryDict):
+		thumb = SmoothUtils.GetChannelThumb(category = category, large = False)
+		oc.add(DirectoryObject(key=Callback(SearchListItems, query="genre," + category), title=category, thumb=thumb))
+
+	return oc
+#################################################################################################
 # @route(PREFIX + '/category')
 # def CategoryMenu(url = None):
 # 	Log.Info(PLUGIN_VERSION + " CategoryMenu " + url)
@@ -555,6 +556,14 @@ def SearchListItems(group = unicode('All'), query = ''):
 					header = unicode(L('Error')),
 					message = unicode(L('Provided guide files are invalid, missing or empty, check the log file for more information'))
 				)
+	schedule = False
+	genre = None
+	if query == 'schedule':
+		query = ''
+		schedule = True
+	if "genre," in query:
+		genre = query.split(",")[0]
+		query = ""
 	channels_list = Dict['streams'].get(group, dict()).values()
 	guide = Dict['guide']
 
@@ -597,24 +606,25 @@ def SearchListItems(group = unicode('All'), query = ''):
 									  program['stop'] > current_datetime]
 				time_filtered_list.sort(key=lambda x: (x['start']))
 				for program in time_filtered_list:
-					if program['title'] and query.lower() in program['title'].lower():
-						new_chan = copy.deepcopy(channel)
-						new_chan['title'] = program['title']
-						new_chan['time'] = program['start']
-						new_chan['usertime'] = program['start'].strftime('%H:%M')
-						if time_filtered_list.index(program) == 0:
-							new_chan['title'] = 'NOW ' +  program['title']
-							now.append(new_chan)
-						elif time_filtered_list.index(program) == 1:
-							new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' ' + program['title']
-							now.append(new_chan)
-						else:
-							if program['start'].date() == current_datetime.date():
-								when = "LATER"
+					if (schedule == True and program['genre'] and program['genre'].lower() in sports_list) or (schedule == False) or (genre and program['genre'] and program['genre'] == genre):
+						if program['title'] and query.lower() in program['title'].lower():
+							new_chan = copy.deepcopy(channel)
+							new_chan['title'] = program['title']
+							new_chan['time'] = program['start']
+							new_chan['usertime'] = program['start'].strftime('%H:%M')
+							if time_filtered_list.index(program) == 0:
+								new_chan['title'] = 'NOW ' +  program['title']
+								now.append(new_chan)
+							elif time_filtered_list.index(program) == 1:
+								new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' ' + program['title']
+								now.append(new_chan)
 							else:
-								when = calendar.day_name[program['start'].weekday()][:3].upper()
-							new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title']
-							now.append(new_chan)
+								if program['start'].date() == current_datetime.date():
+									when = "LATER"
+								else:
+									when = calendar.day_name[program['start'].weekday()][:3].upper()
+								new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title']
+								now.append(new_chan)
 	now.sort(key = lambda x: (x['time']))
 	count = 0
 	for item in now:
@@ -905,7 +915,6 @@ def GetSummary(id, name, title, default=''):
 							summary = summary + ' - ' + item['desc']
 
 	if summary:
-		Log.Info(Dict['channels'])
 		# Log.Info("tv1" + guide["tv.9"].values())
 		return summary
 	else:

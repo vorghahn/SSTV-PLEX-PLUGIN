@@ -356,6 +356,7 @@ def build_channel_map():
 	Log.Info("Loading channel list")
 
 	try:
+		Log.Info("Fogs channel list succeded.")
 		url = 'https://sstv.fog.pt/epg/channels.json'
 		jsonChanList = JSON.ObjectFromURL(url, encoding = 'utf-8')
 
@@ -383,6 +384,7 @@ def build_channel_map():
 			streams.setdefault(unicode('All'), {})[channel] = stream
 			streams.setdefault(unicode('SSTV'), {})[channel] = stream
 	except:
+		Log.Info("Fogs channel list failed, using SSTV.")
 		url = 'https://speed.guide.smoothstreams.tv/feed-new.json'
 		jsonEPG = JSON.ObjectFromURL(url, encoding='utf-8')
 		jsonChanList = jsonEPG['data']
@@ -565,9 +567,11 @@ def LoadXMLTV():
 					}
 					guide.setdefault(channel, {})[count] = item
 	try:
+		Log.Info("Fogs EPG passed.")
 		xmltv = open_xmltv(full_xmltv)
 		xmltv_file = full_xmltv
 	except:
+		Log.Info("Fogs EPG failed, trying SSTV.")
 		xmltv = open_xmltv(sports_xmltv)
 		xmltv_file = sports_xmltv
 	process_xmltv(xmltv, xmltv_file)

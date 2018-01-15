@@ -3,14 +3,15 @@
 ## About
 
 Forked from https://bitbucket.org/stankness/sstv-plex-plugin/overview on 25 MAR 2017
+Rewritten based of Cigaras IPTV Bundle in DEC 2017
 
 This is a Plex plugin to access your SmoothStreamsTV account.
 
 ## Installation
 
-- Unzip the downloaded file and place the smoothstreams2.bundle folder in the correct location for your Plex Media Server platform – see here for details: https://support.plex.tv/hc/en-us/articles/201106098-How-do-Ifind-the-Plug-Ins-folder-
+- Unzip the downloaded file and place the smoothstreams3.bundle folder in the correct location for your Plex Media Server platform ï¿½ see here for details: https://support.plex.tv/hc/en-us/articles/201106098-How-do-Ifind-the-Plug-Ins-folder-
 - Using a web browser open Plex Web (http://PLEXSEVERIP:32400/web/index.html) and select Channels
-- Smoothstreams should be in the Channels list now. Hover over the Smoothstreams channel and click on the cog to configure.
+- SmoothstreamsTV should be in the Channels list now. Hover over the Smoothstreams channel and click on the cog to configure.
 - You should then be able to open the Smoothstreams channel and start watching the streams
 
 ## Options
@@ -22,24 +23,12 @@ Useful for faultfinding or for a simpler interface.
 - Yes: Channels only mode
 - Yes (no EPG): Channels only mode with zero epg data
 
-### EPG Options
-#### Secure
-Http or https, some clients will not handle https.
-
-#### Source
-Selection of EPG choices to aid in client compatibility, does not affect 'Sports only' mode.
-
 ### My Search
 This is an area where you can setup custom entries for the plugin's home page. This will do a search based on the terms. You can use any strings to match the title, description or category in the guide. Items are separated by a semicolon (;) so that you can make multiple entries.
 
-You can also use the following keywords:
-
-- NOW: Only return content that is currently on
-- NEXT: Only return content that is starting in the next 90 minutes (can't be used at the same time as NOW)
-
 #### Example
 ```
-LiveNHL:NHL NOW;NFL;Movies NEXT;NOW;US Sports:NFL NHL NBA Baseball;Devils:"New Jersey Devils"
+US Sports:NFL NHL NBA Baseball;Devils:"New Jersey Devils";NBA;NFL
 ```
 
 Would make six entries.
@@ -72,11 +61,11 @@ Download the latest release here: https://bitbucket.org/vorghahn/sstv-plex-plugi
 
 ## Uninstall
 - Delete the smoothstreams2.bundle folder from your plugins folder location - https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-thePlug-Ins-folder-
-- Delete com.plexapp.plugins.smoothstreams2 - use this link to find the location depending on platform- https://support.plex.tv/hc/enus/articles/202967376-Clearing-Plugin-Channel-Agent-HTTP-Caches
-- Delete com.plexapp.plugins.smoothstreams2 from the Data folder. Use the above link and change Caches for Data on the end of the string to find the location. Change %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Caches\ to %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Data
+- Delete com.plexapp.plugins.smoothstreams3 - use this link to find the location depending on platform- https://support.plex.tv/hc/enus/articles/202967376-Clearing-Plugin-Channel-Agent-HTTP-Caches
+- Delete com.plexapp.plugins.smoothstreams3 from the Data folder. Use the above link and change Caches for Data on the end of the string to find the location. Change %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Caches\ to %LOCALAPPDATA%\Plex Media Server\Plug-in Support\Data
 
 ## Issues
-Report issues preferably on SSTV forums. If possible share the most recent log file from PLEXHOMEDIR/Logs/PMS Plugins Logs/com.plexapp.plugins.smoothstreams.log
+Report issues preferably on SSTV forums. If possible share the most recent log file from PLEXHOMEDIR/Logs/PMS Plugins Logs/com.plexapp.plugins.smoothstreamstv.log
 
 ## Troubleshooting
 

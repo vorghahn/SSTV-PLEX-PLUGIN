@@ -22,11 +22,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.2
+PLUGIN_VERSION = 0.3
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.3 - First attempt at EPG fix.
 # 0.2 - Addition of schedule menu items
 # 0.1 - Initial
 

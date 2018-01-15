@@ -105,7 +105,7 @@
 		"id":       "playlist",
 		"label":    "Playlist file name or URL, multiple entries can be entered separated with semicolon (please keep in mind that default file playlist.m3u will be overwritten on update)",
 		"type":     "text",
-		"default":  "playlist.m3u"
+		"default":  ""
 	},
 	{
 		"id":       "filename_groups",

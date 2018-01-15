@@ -575,11 +575,13 @@ def LoadXMLTV():
 		xmltv = open_xmltv(sports_xmltv)
 		xmltv_file = sports_xmltv
 	process_xmltv(xmltv, xmltv_file)
-	xmltv_files = Prefs['xmltv'].split(';')
 
-	for xmltv_file in xmltv_files:
-		xmltv = open_xmltv(xmltv_file)
-		process_xmltv(xmltv, xmltv_file)
+	if Prefs['xmltv']:
+		xmltv_files = Prefs['xmltv'].split(';')
+
+		for xmltv_file in xmltv_files:
+			xmltv = open_xmltv(xmltv_file)
+			process_xmltv(xmltv, xmltv_file)
 
 	Dict['genres'] = genres
 	Dict['channels'] = channels

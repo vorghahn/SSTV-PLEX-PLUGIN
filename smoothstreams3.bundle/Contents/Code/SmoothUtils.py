@@ -438,7 +438,8 @@ def LoadXMLTV():
 	genres = {}
 	genres['sports']  = []
 	genres['all'] = []
-	full_xmltv = 'https://sstv.fog.pt/epg/xmltv1.xml.gz'
+	full_xmltv = 'https://sstv.fog.pt/epg/xmltv3.xml.gz'
+	fallback = 'https://sstv.fog.pt/epg/xmltv1.xml.gz'
 	fallback1 = 'http://ca.epgrepo.download/xmltv1.xml'
 	fallback2 = 'http://eu.epgrepo.download/xmltv1.xml'
 	sports_xmltv = 'https://fast-guide.smoothstreams.tv/feed.xml'
@@ -581,24 +582,29 @@ def LoadXMLTV():
 			xmltv_file = full_xmltv
 	else:
 		try:
-			Log.Info("Fogs EPG passed.")
+			Log.Info("Fogs 3day EPG passed.")
 			xmltv = open_xmltv(full_xmltv)
 			xmltv_file = full_xmltv
 		except:
-			Log.Info("Fogs EPG failed.")
 			try:
-				Log.Info("CA mirror EPG passed.")
-				xmltv = open_xmltv(fallback1)
-				xmltv_file = fallback1
+				Log.Info("Fogs 1day EPG passed.")
+				xmltv = open_xmltv(fallback)
+				xmltv_file = fallback
 			except:
+				Log.Info("Fogs EPG failed.")
 				try:
-					Log.Info("EU mirror EPG passed.")
-					xmltv = open_xmltv(fallback2)
-					xmltv_file = fallback2
+					Log.Info("CA mirror EPG passed.")
+					xmltv = open_xmltv(fallback1)
+					xmltv_file = fallback1
 				except:
-					Log.Info("Full EPG failed, trying SSTV.")
-					xmltv = open_xmltv(sports_xmltv)
-					xmltv_file = sports_xmltv
+					try:
+						Log.Info("EU mirror EPG passed.")
+						xmltv = open_xmltv(fallback2)
+						xmltv_file = fallback2
+					except:
+						Log.Info("Full EPG failed, trying SSTV.")
+						xmltv = open_xmltv(sports_xmltv)
+						xmltv_file = sports_xmltv
 	process_xmltv(xmltv_file)
 
 	if Prefs['xmltv']:

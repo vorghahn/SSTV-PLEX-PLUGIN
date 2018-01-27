@@ -12,7 +12,7 @@ import time
 import calendar
 import ssl
 import copy
-from locale_patch import L, SetAvailableLanguages
+# from locale_patch import L, SetAvailableLanguages
 from threading import Thread
 
 Smoothstreams_URL = 'http://www.Smoothstreams.com'
@@ -43,7 +43,7 @@ def Start():
 	getLatestVersion()
 	Log.Info("***{0} starting Python Version {1} TimeZone {2} PluginVersion {3} SSL Version {4}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION,ssl.OPENSSL_VERSION))
 	loginResult = SmoothAuth.login()
-	SetAvailableLanguages({'en', 'fr', 'ru'})
+	# SetAvailableLanguages({'en', 'fr', 'ru'})
 	if Dict['SPassW'] is None:
 		Log.Info('Bad login here, need to display it')
 		ObjectContainer.title1 = NAME + " - Enter Login Details ->"

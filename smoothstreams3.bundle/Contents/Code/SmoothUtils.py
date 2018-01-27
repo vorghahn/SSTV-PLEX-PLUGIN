@@ -438,7 +438,9 @@ def LoadXMLTV():
 	genres = {}
 	genres['sports']  = []
 	genres['all'] = []
-	full_xmltv = 'https://sstv.fog.pt/epg/xmltv3.xml.gz'
+	full_xmltv = 'https://sstv.fog.pt/epg/xmltv1.xml.gz'
+	fallback1 = 'http://ca.epgrepo.download/xmltv1.xml'
+	fallback2 = 'http://eu.epgrepo.download/xmltv1.xml'
 	sports_xmltv = 'https://fast-guide.smoothstreams.tv/feed.xml'
 
 
@@ -462,7 +464,8 @@ def LoadXMLTV():
 		return xmltv
 
 
-	def process_xmltv(xmltv, xmltv_file):
+	def process_xmltv(xmltv_file):
+		xmltv = open_xmltv(xmltv_file)
 		try:
 			#root = XML.ElementFromString(xmltv, encoding = None)
 			root = xml.etree.ElementTree.fromstring(xmltv)
@@ -566,22 +569,43 @@ def LoadXMLTV():
 						'order': count
 					}
 					guide.setdefault(channel, {})[count] = item
-	try:
-		Log.Info("Fogs EPG passed.")
-		xmltv = open_xmltv(full_xmltv)
-		xmltv_file = full_xmltv
-	except:
-		Log.Info("Fogs EPG failed, trying SSTV.")
-		xmltv = open_xmltv(sports_xmltv)
-		xmltv_file = sports_xmltv
-	process_xmltv(xmltv, xmltv_file)
+
+	if Prefs['sportsOnly']:
+		try:
+			Log.Info("Sports EPG passed.")
+			xmltv = open_xmltv(sports_xmltv)
+			xmltv_file = sports_xmltv
+		except:
+			Log.Info("Sports EPG failed, trying Full.")
+			xmltv = open_xmltv(full_xmltv)
+			xmltv_file = full_xmltv
+	else:
+		try:
+			Log.Info("Fogs EPG passed.")
+			xmltv = open_xmltv(full_xmltv)
+			xmltv_file = full_xmltv
+		except:
+			Log.Info("Fogs EPG failed.")
+			try:
+				Log.Info("CA mirror EPG passed.")
+				xmltv = open_xmltv(fallback1)
+				xmltv_file = fallback1
+			except:
+				try:
+					Log.Info("EU mirror EPG passed.")
+					xmltv = open_xmltv(fallback2)
+					xmltv_file = fallback2
+				except:
+					Log.Info("Full EPG failed, trying SSTV.")
+					xmltv = open_xmltv(sports_xmltv)
+					xmltv_file = sports_xmltv
+	process_xmltv(xmltv_file)
 
 	if Prefs['xmltv']:
 		xmltv_files = Prefs['xmltv'].split(';')
 
 		for xmltv_file in xmltv_files:
-			xmltv = open_xmltv(xmltv_file)
-			process_xmltv(xmltv, xmltv_file)
+			process_xmltv(xmltv_file)
 
 	Dict['genres'] = genres
 	Dict['channels'] = channels

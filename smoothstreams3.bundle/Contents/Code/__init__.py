@@ -22,11 +22,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.3
+PLUGIN_VERSION = 0.31
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.31 - Addition of extra fallbacks for EPG, reenabled sportsOnly EPG
 # 0.3 - First attempt at EPG fix.
 # 0.2 - Addition of schedule menu items
 # 0.1 - Initial
@@ -295,7 +296,53 @@ def SimpleStreamsNoEPG():
 	Log.Debug('SimpleStreamsNoEPG menu: Source is ' + str(Dict['source']))
 	Log.Info(str(PLUGIN_VERSION) + ' SimpleStreamsNoEPG')
 
-	for channelNum in range(1, int(Prefs['numChannels']) + 1):
+	def GetVideoURL(url, live=True):
+		if url.startswith('rtmp') and False:
+			Log.Debug('*' * 80)
+			Log.Debug('* url before processing: %s' % url)
+			Log.Debug('* url after processing: %s' % RTMPVideoURL(url=url, live=live))
+			Log.Debug('*' * 80)
+			return RTMPVideoURL(url=url, live=live)
+		elif url.startswith('mms') and False:
+			return WindowsMediaVideoURL(url=url)
+		else:
+			return HTTPLiveStreamURL(url=url)
+
+	@route(PREFIX + '/createvideoclipobject2')
+	def CreateVideoClipObject2(url, title, thumb=None, tagline=None, summary=None, studio=None, quotes=None,
+	                          container=False, art=ART, **kwargs):
+		vco = VideoClipObject(
+			key=Callback(CreateVideoClipObject, url=url, title=SmoothUtils.fix_text(title), summary=summary,
+			             tagline=tagline, studio=studio, quotes=quotes, thumb=thumb, art=ART, container=True),
+			# rating_key = url,
+			url=url,
+			title=SmoothUtils.fix_text(title),
+			summary=summary,
+			tagline=tagline,
+			studio=studio,
+			quotes=quotes,
+			thumb=thumb,
+			items=[
+				MediaObject(
+					container=Container.MP4,  # MP4, MKV, MOV, AVI
+					bitrate=bitrate,
+					video_codec=VideoCodec.H264,  # H264
+					video_resolution=video_resolution,
+					audio_codec=AudioCodec.AAC,  # ACC, MP3
+					audio_channels=2,  # 2, 6
+					parts=[PartObject(key=GetVideoURL(url=url), duration=1000)],
+					optimized_for_streaming=True) for video_resolution, bitrate, version_id in
+				[(1080, 5000, 'hd1080'), (720, 3000, 'hd720'), (576, 1500, 'sd1500'), (576, 1200, 'sd1200'),
+				 (360, 900, 'sd900'), (360, 600, 'basic600')]
+			]
+		)
+
+		if container:
+			return ObjectContainer(objects=[vco])
+		else:
+			return vco
+
+	for channelNum in range(1,2):
 		oc.add(
 			CreateVideoClipObject(
 				url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
@@ -303,6 +350,63 @@ def SimpleStreamsNoEPG():
 				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
 				optimized_for_streaming=True,
 				include_container=False #True before though...
+			)
+		)
+		oc.add(VideoClipObject(
+			key = Callback(CreateVideoClipObject,
+				url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&tm=a",
+				title = str(channelNum)+'a',
+				thumb = 'https://guide.smoothstreams.tv/assets/images/channels/150.png',
+				container = True),
+			url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&tm=a",
+			title = str(channelNum)+'a',
+			studio = channelNum,
+			thumb = 'https://guide.smoothstreams.tv/assets/images/channels/150.png',
+			items = [
+				MediaObject(
+					parts = [ PartObject(key = SmoothUtils.GetFullUrlFromChannelNumber(channelNum), duration = 1000) ],
+					optimized_for_streaming = True
+				)
+			]
+			))
+		oc.add(VideoClipObject(
+			key = Callback(CreateVideoClipObject,
+				url = GetVideoURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)) + "&tm=b",
+				title = str(channelNum)+'b',
+				thumb = 'https://guide.smoothstreams.tv/assets/images/channels/150.png',
+				container = True),
+			url = SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&tm=b",
+			title = str(channelNum)+'b',
+			studio = channelNum,
+			thumb = 'https://guide.smoothstreams.tv/assets/images/channels/150.png',
+			items = [
+				MediaObject(
+					parts = [ PartObject(key = GetVideoURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)), duration = 1000) ],
+					optimized_for_streaming = True
+				)
+			]
+			))
+		oc.add(
+			CreateVideoClipObject(
+				url=GetVideoURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)) + "&tm=c",
+				title=str(channelNum)+'c',
+				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
+				optimized_for_streaming=True,
+				include_container=False #True before though...
+			)
+		)
+		oc.add(
+			CreateVideoClipObject2(
+				url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum) + "&tm=d",
+				title=str(channelNum)+'d',
+				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
+			)
+		)
+		oc.add(
+			CreateVideoClipObject2(
+				url=GetVideoURL(SmoothUtils.GetFullUrlFromChannelNumber(channelNum)) + "&tm=e",
+				title=str(channelNum)+'e',
+				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
 			)
 		)
 	return oc

@@ -11,6 +11,7 @@ import dateutil.parser
 import datetime
 import urllib
 import re
+import json
 import SmoothUtils
 from dateutil.tz import tzlocal
 
@@ -23,17 +24,23 @@ def login():
 			service = getLoginSite()
 			Log.Info("calling streams login for service " + service)
 			if service == "mma-tv" or service == "viewmmasr":
-				url = 'https://www.mma-tv.net/loginForm.php'
+				url = 'https://www.mma-tv.net/loginForm.php?'
 			else:
-				url = 'https://auth.smoothstreams.tv/hash_api.php'
+				url = 'https://auth.smoothstreams.tv/hash_api.php?'
 			if Prefs["username"] is not None and Prefs["password"] is not None:
 				Log.Info("login url " + url + " for username " + Prefs['username'])
+
 				uname = Prefs['username']
 				pword = Prefs['password']
 				if uname != '':
-					post_data = {"username": uname, "password": pword, "site": service}
+					params = {"username": uname, "password": pword, "site": service}
 					try:
-						result = JSON.ObjectFromURL(url, values = post_data, encoding = 'utf-8', cacheTime = LOGIN_TIMEOUT_MINUTES * 100)
+						url = url + urllib.urlencode(params)
+
+						if service == "mma-tv" or service == "viewmmasr":
+							result = JSON.ObjectFromURL(url, values = params, encoding = 'utf-8', cacheTime = LOGIN_TIMEOUT_MINUTES * 100)
+						else:
+							result = json.loads(urllib.urlopen(url).read().decode("utf-8"))
 						try:
 							Log.Info(result)
 							Dict["SUserN"] = result["code"]

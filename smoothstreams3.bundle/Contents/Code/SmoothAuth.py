@@ -25,7 +25,7 @@ def login():
 			if service == "mma-tv" or service == "viewmmasr":
 				url = 'https://www.mma-tv.net/loginForm.php'
 			else:
-				url = 'http://auth.smoothstreams.tv/hash_api.php'
+				url = 'https://auth.smoothstreams.tv/hash_api.php'
 			if Prefs["username"] is not None and Prefs["password"] is not None:
 				Log.Info("login url " + url + " for username " + Prefs['username'])
 				uname = Prefs['username']

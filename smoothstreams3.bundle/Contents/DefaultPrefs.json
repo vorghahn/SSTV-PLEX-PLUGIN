@@ -29,7 +29,7 @@
 		"id": "service",
 		"type": "enum",
 		"label": "Service",
-		"values": ["None","MyStreams","Live247","StarStreams","StreamTVNow","MMA-TV/MyShout","MMA SR+"],
+		"values": ["None","MyStreams","Live247","StarStreams","StreamTVNow","MMA-TV/MyShout"],
 		"default": "None"
 	},
 	{

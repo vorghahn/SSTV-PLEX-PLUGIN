@@ -86,8 +86,6 @@ def getLoginSite():
 	elif serviceName == 'StreamTVNow':
 		return 'viewstvn'
 	elif serviceName == 'MMA-TV/MyShout':
-		return 'mma-tv'
-	elif serviceName == 'MMA SR+':
 		return 'viewmmasr'
 	else:
 		Log.Error('getLoginSite() called with invalid service name')

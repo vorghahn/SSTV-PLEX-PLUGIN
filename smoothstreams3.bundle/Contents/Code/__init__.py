@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.32
+PLUGIN_VERSION = 0.33
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.33 - Change to Requests Module
 # 0.32 - Change to ssl auth
 # 0.31 - Addition of extra fallbacks for EPG, reenabled sportsOnly EPG
 # 0.3 - First attempt at EPG fix.

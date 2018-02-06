@@ -10,7 +10,7 @@ import calendar
 import dateutil.parser
 import datetime
 import urllib
-import re
+import requests
 import json
 import SmoothUtils
 from dateutil.tz import tzlocal
@@ -36,11 +36,9 @@ def login():
 					params = {"username": uname, "password": pword, "site": service}
 					try:
 						url = url + urllib.urlencode(params)
+						session = requests.Session()
 
-						if service == "mma-tv" or service == "viewmmasr":
-							result = JSON.ObjectFromURL(url, values = params, encoding = 'utf-8', cacheTime = LOGIN_TIMEOUT_MINUTES * 100)
-						else:
-							result = json.loads(urllib.urlopen(url).read().decode("utf-8"))
+						result = session.post(url, params).json()
 						try:
 							Log.Info(result)
 							Dict["SUserN"] = result["code"]

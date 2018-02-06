@@ -12,6 +12,7 @@ import time
 import calendar
 import ssl
 import copy
+import platform
 # from locale_patch import L, SetAvailableLanguages
 from threading import Thread
 
@@ -61,7 +62,7 @@ def Start():
 		VideoClipObject.art = R('art-default.jpg')
 		Dict['playlist_loading_in_progress'] = False
 		Dict['guide_loading_in_progress'] = False
-		HTTP.Headers['User-agent'] = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:22.0) Gecko/20100101 Firefox/22.0'
+		HTTP.Headers['User-agent'] = 'YAP4PLEX - %s - %s - %s' % (sys.argv[0], platform.system(), str(PLUGIN_VERSION))
 
 ####################################################################################################
 

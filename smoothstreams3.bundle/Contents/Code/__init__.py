@@ -844,7 +844,7 @@ def ListItems(group = unicode('All'), query = '', page = 1):
 		oc.add(
 			CreateVideoClipObject(
 				url = item['url'],
-				title = item['order'] + " " + item['title'],
+				title = str(item['order']) + " " + item['title'],
 				thumb = GetImage(item['thumb'], default = 'icon-tv.png', id = item['id'], name = item['name'], title = item['title']),
 				art = GetImage(item['art'], default = 'art-default.jpg'),
 				summary = GetSummary(item['id'], item['name'], item['title'], unicode(L('No description available'))),

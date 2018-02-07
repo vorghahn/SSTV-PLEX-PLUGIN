@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.33
+PLUGIN_VERSION = 0.34
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.34 - Added channel numbers to standard list
 # 0.33 - Change to Requests Module
 # 0.32 - Change to ssl auth
 # 0.31 - Addition of extra fallbacks for EPG, reenabled sportsOnly EPG
@@ -843,7 +844,7 @@ def ListItems(group = unicode('All'), query = '', page = 1):
 		oc.add(
 			CreateVideoClipObject(
 				url = item['url'],
-				title = item['title'],
+				title = item['id'] + " " + item['title'],
 				thumb = GetImage(item['thumb'], default = 'icon-tv.png', id = item['id'], name = item['name'], title = item['title']),
 				art = GetImage(item['art'], default = 'art-default.jpg'),
 				summary = GetSummary(item['id'], item['name'], item['title'], unicode(L('No description available'))),

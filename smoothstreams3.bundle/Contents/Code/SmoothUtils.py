@@ -318,7 +318,7 @@ def GetFullUrlFromChannelNumber(channelNum):
 	return url_template.format(Dict['source'],Dict['server'],Dict['port'],Dict['service'],'%02d' % int(channelNum), quality, Dict['sourceext'], Dict['SPassW'])
 
 
-def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, chanFirst = False):
+def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, chanFirst = False, fallBack = ""):
 	if False: #Prefs['showThumbs'] == False:
 		return None
 	else:
@@ -329,11 +329,10 @@ def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, ch
 			sChanNum = str(chanNum)
 		if large:
 			chanAdd = "v"
-			fallBack = "https://placeholdit.imgix.net/~text?txtsize=25&bg=000000&txtclr=ffffff&w=195&h=110&fm=png&txttrack=0&txt=" + ((sChanNum + " " + chanName + " " + category).replace("  ", " ").replace(" ", "+")).strip()
 		else:
 			chanAdd = ""
-			fallBack = "https://placeholdit.imgix.net/~text?txtsize=25&bg=000000&txtclr=ffffff&w=120&h=120&fm=png&txttrack=0&txt=" + ((sChanNum + " " + chanName + " " + category).replace("  ", " ").replace(" ", "+")).strip()
-
+		if not fallBack:
+			fallBack = "https://placeholdit.imgix.net/~text?txtsize=25&bg=000000&txtclr=ffffff&w=195&h=110&fm=png&txttrack=0&txt=" + ((sChanNum + " " + chanName + " " + category).replace("  ", " ").replace(" ", "+")).strip()
 		thumb = None
 		if chanFirst:
 			thumb = R(re.sub('[^A-Za-z0-9]+', '', chanName) + chanAdd + '.png')

@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.34
+PLUGIN_VERSION = 0.35
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.35 - Incorporate images saved in resources to override m3u8 sourced icon
 # 0.34 - Added channel numbers to standard list
 # 0.33 - Change to Requests Module
 # 0.32 - Change to ssl auth
@@ -845,7 +846,8 @@ def ListItems(group = unicode('All'), query = '', page = 1):
 			CreateVideoClipObject(
 				url = item['url'],
 				title = str(item['order']) + " " + item['title'],
-				thumb = GetImage(item['thumb'], default = 'icon-tv.png', id = item['id'], name = item['name'], title = item['title']),
+				#thumb = GetImage(item['thumb'], default = 'icon-tv.png', id = item['id'], name = item['name'], title = item['title']),
+				thumb = SmoothUtils.GetChannelThumb(chanNum = item['order'], chanName = item['title'], category = "", large = False, fallBack = GetImage(item['thumb'], default = 'icon-tv.png', id = item['id'], name = item['name'], title = item['title'])),
 				art = GetImage(item['art'], default = 'art-default.jpg'),
 				summary = GetSummary(item['id'], item['name'], item['title'], unicode(L('No description available'))),
 				c_audio_codec = item['audio_codec'] if item['audio_codec'] else None,

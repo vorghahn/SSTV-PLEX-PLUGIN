@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.35
+PLUGIN_VERSION = 0.36
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.36 - Correction of EPG times and filters
 # 0.35 - Incorporate images saved in resources to override m3u8 sourced icon
 # 0.34 - Added channel numbers to standard list
 # 0.33 - Change to Requests Module
@@ -1008,6 +1009,7 @@ def GetSummary(id, name, title, default=''):
 								key = id
 		if key:
 			items_list = guide[key].values()
+
 			if items_list:
 				current_datetime = Datetime.Now()
 				try:
@@ -1026,7 +1028,10 @@ def GetSummary(id, name, title, default=''):
 							summary = summary + ' - ' + item['desc']
 
 	if summary:
-		# Log.Info("tv1" + guide["tv.9"].values())
+		# Log.Info("D.Now" + str(Datetime.Now()))
+		# Log.Info("D.UTCNow" + str(Datetime.UTCNow()))
+		# Log.Info("espn")
+		# Log.Info(guide["I206.32645.zap2it.com"].values())
 		return summary
 	else:
 		return default

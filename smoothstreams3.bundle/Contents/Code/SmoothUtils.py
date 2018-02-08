@@ -11,6 +11,7 @@ import htmlentitydefs
 import gzip
 import urllib2
 import io
+import requests
 import xml.etree.ElementTree
 from m3u_parser import LoadPlaylist
 import xmltv_parser
@@ -346,6 +347,32 @@ def GetChannelThumb(chanNum = 0, chanName = "", category = "", large = False, ch
 			thumb = fallBack
 		return thumb
 
+def find_between(s, first, last):
+	try:
+		start = s.index(first) + len(first)
+		end = s.index(last, start)
+		return s[start:end]
+	except ValueError:
+		return ""
+
+def gather_codecs(url):
+	codecs = {}
+	try:
+		url = GetFullUrlFromChannelNumber(url)
+		session = requests.Session()
+		result = session.get(url)
+		data = result.text
+		data = find_between(data, "INF:", "chunks")
+		data = data.split(",")
+		data2 = find_between(data, '"', '"')
+		data2 = data2.split(",")
+		for i in data:
+			a = i.split("=")
+			codecs[a[0]] = a[1]
+		codecs["AUDIO"] = data2[0]
+		codecs["VIDEO"] = data2[1]
+	except:
+		return {"BANDWIDTH":u'',"RESOLUTION":u'',"VIDEO":u'', "AUDIO":u''}
 
 def build_channel_map():
 	Dict['groups'] = {u'SSTV': {'order': 1, 'art': u'art-default.jpg', 'thumb': u'Icon-Default.png', 'title': u'SSTV'}}
@@ -366,6 +393,7 @@ def build_channel_map():
 			channame = oChannel["channame"].replace(" - ", "").strip()
 			if channame == 'Empty':
 				channame = channum
+			codecs = gather_codecs(channel)
 			stream = {
 				'url': u'%s' % GetFullUrlFromChannelNumber(channel),
 				'title': u'%s' % channame,
@@ -373,10 +401,10 @@ def build_channel_map():
 				'name': u'%s' % channame,
 				'thumb': u'%s' % thumb.format(channel),
 				'art': u'', # % GetChannelThumb(channel, channame),
-				'audio_codec': u'',
-				'video_codec': u'',
+				'audio_codec': u'%s' % codecs["AUDIO"],
+				'video_codec': u'%s' % codecs["VIDEO"],
 				'container': u'',
-				'protocol': u'',
+				'protocol': u'%s' % 'hls' if Prefs["source"] == "https" else 'rtmp',
 				'optimized_for_streaming': u'',
 				'order': channel
 			}
@@ -389,12 +417,14 @@ def build_channel_map():
 		jsonChanList = jsonEPG['data']
 
 		for item in jsonChanList:
+
 			oChannel = jsonChanList[item]
 			channum = oChannel["number"]
 			channel = int(oChannel["number"])
 			channame = oChannel["name"].replace(" - ", "").strip()
 			if channame == 'Empty':
 				channame = channum
+
 			stream = {
 				'url': u'%s' % GetFullUrlFromChannelNumber(channel),
 				'title': u'%s' % channame,
@@ -492,7 +522,7 @@ def LoadXMLTV():
 						if src_attr:
 							icons[key] = src_attr
 			count = 0
-			current_datetime = datetime.datetime.utcnow()
+			current_datetime = datetime.datetime.now()
 			for programme_elem in root.findall('./programme'):
 				channel_attr = programme_elem.get('channel')
 				try:
@@ -570,6 +600,7 @@ def LoadXMLTV():
 					}
 					guide.setdefault(channel, {})[count] = item
 
+
 	if Prefs['sportsOnly']:
 		try:
 			Log.Info("Sports EPG passed.")
@@ -623,7 +654,7 @@ def LoadXMLTV():
 
 ####################################################################################################
 def StringToLocalDatetime(arg_string):
-
+	# changes to remove seconds diff, currently getting differences in milliseconds which is causing times such as 14:59 for a start time, suspect due to program running time
 	arg_string_split = arg_string.split(' ')
 	arg_datetime = Datetime.ParseDate(arg_string_split[0])
 	if len(arg_string_split) > 1:
@@ -634,7 +665,7 @@ def StringToLocalDatetime(arg_string):
 		utc_datetime = arg_datetime - Datetime.Delta(seconds = arg_offset_seconds)
 	else:
 		utc_datetime = arg_datetime
-	loc_offset_seconds = (datetime.datetime.now() - datetime.datetime.utcnow()).total_seconds()
+	loc_offset_seconds = (datetime.datetime.now().replace(microsecond=0, second=0) - datetime.datetime.utcnow().replace(microsecond=0, second=0)).total_seconds()
 	loc_datetime = utc_datetime + Datetime.Delta(seconds = loc_offset_seconds)
 	return loc_datetime
 

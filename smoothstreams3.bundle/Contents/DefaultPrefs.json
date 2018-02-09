@@ -35,9 +35,9 @@
 	{
 		"id": "simple",
 		"type": "enum",
-		"label": "Simple (Channel List Only",
-		"values": ["No","Yes","Yes (No EPG)"],
-		"default": "No"
+		"label": "Menu Style",
+		"values": ["Full","SimpleStreams","SimpleStreams (No EPG)","Test"],
+		"default": "Full"
 	},
 	{
 		"id": "mySearch",

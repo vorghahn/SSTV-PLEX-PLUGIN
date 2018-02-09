@@ -13,7 +13,7 @@ import calendar
 import ssl
 import copy
 import platform
-# from locale_patch import L, SetAvailableLanguages
+from locale_patch import L, SetAvailableLanguages
 from threading import Thread
 
 Smoothstreams_URL = 'http://www.Smoothstreams.com'
@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.36
+PLUGIN_VERSION = 0.40
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.40 - Categories Enabled, SimpleStreams menu changed, Test menu added (update requires restart)
 # 0.36 - Correction of EPG times and filters
 # 0.35 - Incorporate images saved in resources to override m3u8 sourced icon
 # 0.34 - Added channel numbers to standard list
@@ -41,7 +42,7 @@ source = ''
 ART  = 'art-default.png'
 ICON = 'Icon-Default.png'
 
-sports_list = ['sports','motorsport','american football',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash"]
+sports_list = ["martial sports",'nba','basketball','sports','motorsport','american football',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash"]
 
 ####################################################################################################
 
@@ -49,7 +50,7 @@ def Start():
 	getLatestVersion()
 	Log.Info("***{0} starting Python Version {1} TimeZone {2} PluginVersion {3} SSL Version {4}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION,ssl.OPENSSL_VERSION))
 	loginResult = SmoothAuth.login()
-	# SetAvailableLanguages({'en', 'fr', 'ru'})
+	SetAvailableLanguages({'en', 'fr', 'ru'})
 	if Dict['SPassW'] is None:
 		Log.Info('Bad login here, need to display it')
 		ObjectContainer.title1 = NAME + " - Enter Login Details ->"
@@ -126,7 +127,9 @@ def VideoMainMenu():
 	sourceType()
 	SmoothUtils.GetServerUrlByName(Prefs["serverLocation"])
 
-	if Prefs['simple'] == 'Yes (No EPG)':
+	if Prefs['simple'] == 'Test':
+		return test()
+	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
 		return SimpleStreamsNoEPG()
 
 	if not Dict['groups'] or not Dict['streams']:
@@ -136,7 +139,7 @@ def VideoMainMenu():
 	Thread(target=SmoothUtils.GuideReloader).start()
 
 
-	if Prefs['simple'] == 'Yes':
+	if Prefs['simple'] == 'SimpleStreams':
 		ObjectContainer.title1 = NAME + updateAvailable
 		return ListItems()
 	else:
@@ -204,7 +207,7 @@ def VideoMainMenu():
 
 			# oc.add(DirectoryObject(key = Callback(LiveMenu), title = "Live Sports", thumb = SmoothUtils.GetChannelThumb(chanName = "Live Sports"), summary = "Live shows"))
 
-			# oc.add(DirectoryObject(key = Callback(CategoriesMenu), title = "Categories", thumb = SmoothUtils.GetChannelThumb(chanName = "Categories"), summary = "Category List"))
+			oc.add(DirectoryObject(key = Callback(CategoriesMenu), title = "Categories", thumb = SmoothUtils.GetChannelThumb(chanName = "Categories"), summary = "Category List"))
 			oc.add(DirectoryObject(key = Callback(SearchListItems, query = 'schedule'), title = "Schedule Sports", thumb = SmoothUtils.GetChannelThumb(chanName = "Schedule"), summary = "Schedule List"))
 
 			# TODO: add custom categories
@@ -301,6 +304,26 @@ def SimpleStreamsNoEPG():
 	oc = ObjectContainer()
 	Log.Debug('SimpleStreamsNoEPG menu: Source is ' + str(Dict['source']))
 	Log.Info(str(PLUGIN_VERSION) + ' SimpleStreamsNoEPG')
+
+	for channelNum in range(1,int(Prefs['numChannels']) + 1):
+		oc.add(
+			CreateVideoClipObject(
+				url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+				title="Channel %s" % str(channelNum),
+				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
+				optimized_for_streaming=True,
+				include_container=False #True before though...
+			)
+		)
+
+	return oc
+
+###################################################################################################
+@route(PREFIX + '/test')
+def test():
+	oc = ObjectContainer()
+	Log.Debug('SimpleStreamsNoEPG menu: Source is ' + str(Dict['source']))
+	Log.Info(str(PLUGIN_VERSION) + ' Test Streams')
 
 	def GetVideoURL(url, live=True):
 		if url.startswith('rtmp') and False:
@@ -417,7 +440,6 @@ def SimpleStreamsNoEPG():
 		)
 	return oc
 
-
 # ###################################################################################################
 # @route(PREFIX + '/live')
 # def LiveMenu(url = None):
@@ -488,10 +510,10 @@ def CategoriesMenu():
 			break
 		Log.Info('sleeping 500ms for async schedule details to return')
 		Thread.Sleep(0.5)
-
+	Log.Info(categoryDict)
 	for category in sorted(categoryDict):
 		thumb = SmoothUtils.GetChannelThumb(category = category, large = False)
-		oc.add(DirectoryObject(key=Callback(SearchListItems, query="genre," + category), title=category, thumb=thumb))
+		oc.add(DirectoryObject(key=Callback(SearchListItems, query="genre,%s" % category), title=category, thumb=thumb))
 
 	return oc
 #################################################################################################
@@ -672,17 +694,28 @@ def SearchListItems(group = unicode('All'), query = ''):
 	if query == 'schedule':
 		query = ''
 		schedule = True
-	if "genre," in query:
-		genre = query.split(",")[0]
+		oc = ObjectContainer(title1=unicode(L('Sports Schedule')))
+	elif "genre," in query:
+
+		genre = query.split(",")[1]
 		query = ""
+		Log.Info("Genre requested %s" % genre)
+		oc = ObjectContainer(title1=unicode(L(genre)))
+	else:
+		oc = ObjectContainer(title1=unicode(L(query)))
 	channels_list = Dict['streams'].get(group, dict()).values()
 	guide = Dict['guide']
 
 	current_datetime = Datetime.Now()
-	oc = ObjectContainer(title1=unicode(L('Search')))
+
 	now = []
 	next = []
 	later = []
+	Log.Info(query)
+	Log.Info(schedule)
+	Log.Info(genre)
+
+
 	for channel in channels_list:
 		key = None
 		id = channel['id']
@@ -716,27 +749,55 @@ def SearchListItems(group = unicode('All'), query = ''):
 									  program['start'] <= current_datetime + Datetime.Delta(hours=guide_hours) and
 									  program['stop'] > current_datetime]
 				time_filtered_list.sort(key=lambda x: (x['start']))
+
+				# if time_filtered_list[0]['genre']:
+				# 	Log.Info(title)
+				# 	Log.Info(time_filtered_list[0]['title'])
+				# 	Log.Info(time_filtered_list[0]['genre'])
+				# 	Log.Info(genre)
 				for program in time_filtered_list:
-					if (schedule == True and program['genre'] and program['genre'].lower() in sports_list) or (schedule == False) or (genre and program['genre'] and program['genre'] == genre):
-						if program['title'] and query.lower() in program['title'].lower():
-							new_chan = copy.deepcopy(channel)
-							new_chan['title'] = program['title']
-							new_chan['time'] = program['start']
-							new_chan['usertime'] = program['start'].strftime('%H:%M')
-							if time_filtered_list.index(program) == 0:
-								new_chan['title'] = 'NOW ' +  program['title']
-								now.append(new_chan)
-							elif time_filtered_list.index(program) == 1:
-								new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' ' + program['title']
-								now.append(new_chan)
+					if program['title'] and (
+									(schedule == True and program['genre'] and program['genre'].lower() in sports_list) or
+						                         (schedule == False and genre == None and query.lower() in program['title'].lower()) or
+						                         (genre and program['genre'] and program['genre'].lower() == genre.lower())
+					):
+						# Log.Info("Pass 1")
+
+						new_chan = copy.deepcopy(channel)
+						new_chan['title'] = program['title']
+						new_chan['time'] = program['start']
+						new_chan['usertime'] = program['start'].strftime('%H:%M')
+						if time_filtered_list.index(program) == 0:
+							new_chan['title'] = 'NOW ' +  program['title']
+							now.append(new_chan)
+							# Log.Info("Now")
+							# Log.Info(title)
+							# Log.Info(new_chan['title'])
+							# Log.Info(new_chan['genre'])
+							# Log.Info(genre)
+						elif time_filtered_list.index(program) == 1:
+							# Log.Info("Next")
+							new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' ' + program['title']
+							now.append(new_chan)
+							# Log.Info(title)
+							# Log.Info(new_chan['title'])
+							# Log.Info(new_chan['genre'])
+							# Log.Info(genre)
+						else:
+							# Log.Info("Later")
+							when = ''
+							if program['start'].date() == current_datetime.date():
+								when = "LATER"
 							else:
-								if program['start'].date() == current_datetime.date():
-									when = "LATER"
-								else:
-									when = calendar.day_name[program['start'].weekday()][:3].upper()
-								new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title']
-								now.append(new_chan)
+								when = calendar.day_name[program['start'].weekday()][:3].upper()
+							new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title']
+							now.append(new_chan)
+							# Log.Info(title)
+							# Log.Info(new_chan['title'])
+							# Log.Info(new_chan['genre'])
+							# Log.Info(genre)
 	now.sort(key = lambda x: (x['time']))
+
 	count = 0
 	for item in now:
 		count+=1

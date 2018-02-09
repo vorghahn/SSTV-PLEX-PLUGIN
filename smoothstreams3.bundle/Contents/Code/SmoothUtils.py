@@ -21,7 +21,7 @@ from threading import Thread
 THUMB_URL = 'https://guide.smoothstreams.tv/assets/images/channels/150.png'
 GUIDE_CACHE_MINUTES = 10
 
-sports_list = ['sports','motorsport','americanfootball',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash","cricket"]
+sports_list = ["martial sports",'nba','sports','motorsport','americanfootball',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash","cricket","basketball"]
 
 
 def fix_text(text):
@@ -561,13 +561,15 @@ def LoadXMLTV():
 						else:
 							genre = None
 					else:
-						if 'nba' in title.lower() or 'nba' in title.lower() or 'ncaam' in title.lower():
+						genre = ''
+					if genre.lower() == 'sports' or genre == '':
+						if 'nba' in title.lower() or 'wnba' in title.lower() or 'ncaam' in title.lower()or 'basketball' in title.lower():
 							genre = "Basketball"
-						elif 'nfl' in title.lower() or 'football' in title.lower() or 'american football' in title.lower() or 'ncaaf' in title.lower() or 'cfb' in title.lower():
+						elif 'nfl' in title.lower() or 'american football' in title.lower() or 'ncaaf' in title.lower() or 'cfb' in title.lower():
 							genre = "AmericanFootball"
-						elif 'epl' in title.lower() or 'efl' in title.lower() or 'soccer' in title.lower() or 'ucl' in title.lower() or 'mls' in title.lower() or 'uefa' in title.lower() or 'fifa' in title.lower() or 'fc' in title.lower() or 'la liga' in title.lower() or 'serie a' in title.lower() or 'wcq' in title.lower():
+						elif 'epl:' in title.lower() or 'efl:' in title.lower() or 'soccer' in title.lower() or 'ucl' in title.lower() or 'mls' in title.lower() or 'uefa' in title.lower() or 'fifa' in title.lower() or 'la liga' in title.lower() or 'serie a' in title.lower() or 'wcq' in title.lower():
 							genre = "Soccer"
-						elif 'rugby' in title.lower() or 'nrl' in title.lower() or 'afl' in title.lower():
+						elif 'rugby' in title.lower() or 'nrl' in title.lower() or 'afl' in title.lower() or 'sevens' in title.lower():
 							genre = "Rugby"
 						elif 'cricket' in title.lower() or 't20' in title.lower():
 							genre = "Cricket"

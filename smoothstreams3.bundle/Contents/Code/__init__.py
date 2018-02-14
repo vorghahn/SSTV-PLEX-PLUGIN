@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.40
+PLUGIN_VERSION = 0.41
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.41 - Typo in UK-Random server fixed
 # 0.40 - Categories Enabled, SimpleStreams menu changed, Test menu added (update requires restart)
 # 0.36 - Correction of EPG times and filters
 # 0.35 - Incorporate images saved in resources to override m3u8 sourced icon

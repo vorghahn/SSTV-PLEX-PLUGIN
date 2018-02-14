@@ -101,7 +101,7 @@ def GetServerUrlByName(serverLocation=None):
 		Dict['server'] = "deu-nl1.SmoothStreams.tv"
 	elif serverLocation == 'EU NL':
 		Dict['server'] = "deu-nl.SmoothStreams.tv"
-	elif serverLocation == 'EU UK Random':
+	elif serverLocation == 'EU UK-Random':
 		Dict['server'] = "deu-uk.SmoothStreams.tv"
 	elif serverLocation == 'EU UK-London1':
 		Dict['server'] = "deu-uk1.SmoothStreams.tv"

@@ -29,7 +29,7 @@
 		"id": "service",
 		"type": "enum",
 		"label": "Service",
-		"values": ["None","MyStreams","Live247","StarStreams","StreamTVNow","MMA-TV/MyShout"],
+		"values": ["None","Live247","StarStreams","StreamTVNow","MMA-TV/MyShout"],
 		"default": "None"
 	},
 	{
@@ -43,7 +43,7 @@
 		"id": "mySearch",
 		"type": "text",
 		"label": " My Search",
-		"default": "NFL;NHL;NBA;WorldFootball"
+		"default": "NFL;NHL;NBA"
 	},
 	{
 		"id": "quality",

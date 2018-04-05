@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.42
+PLUGIN_VERSION = 0.43
 PLUGIN_VERSION_LATEST = ''
 source = ''
 
 # Changelist
+# 0.43 - Updated FOG Urls
 # 0.42 - Options adjusted, removed mystreams and worldfootball
 # 0.41 - Typo in UK-Random server fixed
 # 0.40 - Categories Enabled, SimpleStreams menu changed, Test menu added (update requires restart)

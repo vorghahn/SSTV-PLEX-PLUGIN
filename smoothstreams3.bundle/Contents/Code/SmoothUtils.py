@@ -194,7 +194,7 @@ def GetServicePort(serviceName=None):
 # 		if Prefs['epg'] == 'iptv':
 # 			scheduleFeedURL = secureEPG + '://iptvguide.netlify.com/tv.json'
 # 		elif Prefs['epg'] == 'fogs':
-# 			scheduleFeedURL = 'https://sstv.fog.pt/epg/feedall1.json.gz'
+# 			scheduleFeedURL = 'https://fast-guide.smoothstreams.tv/altepg/feedall1.json.gz'
 # 		else:
 # 			scheduleFeedURL = secureEPG + '://speed.guide.smoothstreams.tv/feed.json'
 # 		Dict['currentGuide'] = "All"
@@ -383,7 +383,7 @@ def build_channel_map():
 
 	try:
 		Log.Info("Fogs channel list succeded.")
-		url = 'https://sstv.fog.pt/epg/channels.json'
+		url = 'https://fast-guide.smoothstreams.tv/altepg/channels.json'
 		jsonChanList = JSON.ObjectFromURL(url, encoding = 'utf-8')
 
 		for item in jsonChanList:
@@ -450,7 +450,7 @@ def build_channel_map():
 	Dict.Save()
 
 	# {'No category': {1: {'art': u'', 'thumb': u'http://speed.guide.smoothstreams.tv/assets/images/channels/1.png',
-	#                      'title': u'ESPNNews', 'url': u'https://sstv.fog.pt/epg/channels.json',
+	#                      'title': u'ESPNNews', 'url': u'https://fast-guide.smoothstreams.tv/altepg/channels.json',
 	#                      'optimized_for_streaming': u'', 'protocol': u'', 'order': u'1', 'container': u'',
 	#                      'audio_codec': u'', 'video_codec': u'', 'id': u'I59976.labs.zap2it.com', 'name': u'ESPNNews'},
 	# {u'No category': {1: {'art': u'', 'thumb': u'http://192.168.1.3:80/sstv/1.png',
@@ -467,8 +467,8 @@ def LoadXMLTV():
 	genres = {}
 	genres['sports']  = []
 	genres['all'] = []
-	full_xmltv = 'https://sstv.fog.pt/epg/xmltv3.xml.gz'
-	fallback = 'https://sstv.fog.pt/epg/xmltv1.xml.gz'
+	full_xmltv = 'https://fast-guide.smoothstreams.tv/altepg/xmltv3.xml.gz'
+	fallback = 'https://fast-guide.smoothstreams.tv/altepg/xmltv1.xml.gz'
 	fallback1 = 'http://ca.epgrepo.download/xmltv1.xml'
 	fallback2 = 'http://eu.epgrepo.download/xmltv1.xml'
 	sports_xmltv = 'https://fast-guide.smoothstreams.tv/feed.xml'

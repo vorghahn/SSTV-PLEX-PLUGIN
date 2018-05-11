@@ -679,14 +679,14 @@ def GuideReload():
 def GuideReloader():
 	while True:
 		if not Dict['last_guide_load_datetime']:
-			LoadXMLTV()
+			GuideReload()
 		else:
 			current_datetime = datetime.datetime.utcnow()
 			cur_utc_hr = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0).hour
-			target_utc_hr = (cur_utc_hr // 3) * 3
+			target_utc_hr = (cur_utc_hr // 4) * 4
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_guide_load_datetime']:
-				LoadXMLTV()
+				GuideReload()
 		Thread.Sleep(10)
 
 def PlaylistReload():
@@ -697,16 +697,12 @@ def PlaylistReload():
 def PlaylistReloader():
 	while True:
 		if not Dict['last_playlist_load_datetime']:
-			build_channel_map()
-			if Prefs['playlist'] != '':
-				LoadPlaylist(Dict['groups'], Dict['streams'])
+			PlaylistReload()
 		else:
 			current_datetime = datetime.datetime.utcnow()
 			cur_utc_hr = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0).hour
-			target_utc_hr = (cur_utc_hr // 3) * 3
+			target_utc_hr = (cur_utc_hr // 4) * 4
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_playlist_load_datetime']:
-				build_channel_map()
-				if Prefs['playlist'] != '':
-					LoadPlaylist(Dict['groups'],Dict['streams'])
+				PlaylistReload()
 		Thread.Sleep(10)

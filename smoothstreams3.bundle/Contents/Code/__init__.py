@@ -24,10 +24,11 @@ VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
 PLUGIN_VERSION = 0.43
-PLUGIN_VERSION_LATEST = ''
+PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.44 - Bugfix
 # 0.43 - Updated FOG Urls
 # 0.42 - Options adjusted, removed mystreams and worldfootball
 # 0.41 - Typo in UK-Random server fixed
@@ -51,7 +52,7 @@ sports_list = ["martial sports",'nba','basketball','sports','motorsport','americ
 
 def Start():
 	getLatestVersion()
-	Log.Info("***{0} starting Python Version {1} TimeZone {2} PluginVersion {3} SSL Version {4}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION,ssl.OPENSSL_VERSION))
+	Log.Info("***{0} starting Python Version {1} TimeZone {2} PluginVersion {3} SSL Version {4}".format(NAME, sys.version, time.timezone, str(PLUGIN_VERSION),ssl.OPENSSL_VERSION))
 	loginResult = SmoothAuth.login()
 	SetAvailableLanguages({'en', 'fr', 'ru'})
 	if Dict['SPassW'] is None:
@@ -110,7 +111,7 @@ def sourceType():
 
 @route(PREFIX + '/ValidatePrefs')
 def ValidatePrefs():
-	Log.Info("***{0} ValidatePrefs Python Version {1} TimeZone {2} PluginVersion {3}".format(NAME, sys.version, time.timezone, PLUGIN_VERSION))
+	Log.Info("***{0} ValidatePrefs Python Version {1} TimeZone {2} PluginVersion {3}".format(NAME, sys.version, time.timezone, str(PLUGIN_VERSION)))
 	# Do we need to reset the extentions?
 	loginResult = SmoothAuth.login()
 	Log.Info(repr(loginResult))
@@ -136,8 +137,8 @@ def VideoMainMenu():
 		return SimpleStreamsNoEPG()
 
 	if not Dict['groups'] or not Dict['streams']:
-		SmoothUtils.PlaylistReload
-		SmoothUtils.GuideReload
+		SmoothUtils.PlaylistReload()
+		SmoothUtils.GuideReload()
 	Thread(target=SmoothUtils.PlaylistReloader).start()
 	Thread(target=SmoothUtils.GuideReloader).start()
 
@@ -156,7 +157,7 @@ def VideoMainMenu():
 			ObjectContainer.title1 = NAME + updateAvailable
 
 			if not Dict['groups']:
-				LoadPlaylist()
+				ReloadPlaylist()
 				if not Dict['groups']:
 					return ObjectContainer(
 						title1=unicode(L('Error')),
@@ -299,6 +300,8 @@ def SimpleStreams():
 				include_container=False #True before though...
 				)
 			)
+			# Preferences
+	oc.add(PrefsObject(title="Preferences", thumb=R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################
@@ -318,7 +321,8 @@ def SimpleStreamsNoEPG():
 				include_container=False #True before though...
 			)
 		)
-
+		# Preferences
+	oc.add(PrefsObject(title="Preferences", thumb=R("icon-prefs.png")))
 	return oc
 
 ###################################################################################################
@@ -441,6 +445,8 @@ def test():
 				thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
 			)
 		)
+		# Preferences
+	oc.add(PrefsObject(title="Preferences", thumb=R("icon-prefs.png")))
 	return oc
 
 # ###################################################################################################
@@ -1185,9 +1191,9 @@ def getLatestVersion():
 		PLUGIN_VERSION_LATEST = float(JSON.ObjectFromURL(vers_url, encoding = 'utf-8')['Version'])
 
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
-			Log.Info("OUT OF DATE " + str(PLUGIN_VERSION) + " < " + PLUGIN_VERSION_LATEST)
+			Log.Info("OUT OF DATE " + str(PLUGIN_VERSION) + " < " + str(PLUGIN_VERSION_LATEST))
 		else:
-			Log.Info("UP TO DATE " + str(PLUGIN_VERSION) + " >= " + PLUGIN_VERSION_LATEST)
+			Log.Info("UP TO DATE " + str(PLUGIN_VERSION) + " >= " + str(PLUGIN_VERSION_LATEST))
 	except:
 		Log.Info("Version check failed")
 		pass

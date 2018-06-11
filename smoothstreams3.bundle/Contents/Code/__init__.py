@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.45
+PLUGIN_VERSION = 0.46
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.46 - Change thread.sleep to time.sleep, 5 min between relaod checks
 # 0.45 - Force playlist reload on start
 # 0.44 - Bugfix
 # 0.43 - Updated FOG Urls

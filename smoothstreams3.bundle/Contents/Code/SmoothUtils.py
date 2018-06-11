@@ -11,6 +11,7 @@ import htmlentitydefs
 import gzip
 import urllib2
 import io
+import time
 import requests
 import xml.etree.ElementTree
 from m3u_parser import LoadPlaylist
@@ -687,7 +688,7 @@ def GuideReloader():
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_guide_load_datetime']:
 				GuideReload()
-		Thread.Sleep(10)
+		time.sleep(300)
 
 def PlaylistReload():
 	build_channel_map()
@@ -705,4 +706,4 @@ def PlaylistReloader():
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_playlist_load_datetime']:
 				PlaylistReload()
-		Thread.Sleep(10)
+		time.sleep(300)

@@ -23,11 +23,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.43
+PLUGIN_VERSION = 0.45
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.45 - Force playlist reload on start
 # 0.44 - Bugfix
 # 0.43 - Updated FOG Urls
 # 0.42 - Options adjusted, removed mystreams and worldfootball
@@ -136,9 +137,8 @@ def VideoMainMenu():
 	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
 		return SimpleStreamsNoEPG()
 
-	if not Dict['groups'] or not Dict['streams']:
-		SmoothUtils.PlaylistReload()
-		SmoothUtils.GuideReload()
+	SmoothUtils.PlaylistReloader()
+	SmoothUtils.GuideReloader()
 	Thread(target=SmoothUtils.PlaylistReloader).start()
 	Thread(target=SmoothUtils.GuideReloader).start()
 

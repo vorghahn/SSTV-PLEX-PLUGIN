@@ -692,7 +692,7 @@ def GuideReloader():
 
 def PlaylistReload():
 	build_channel_map()
-	if Prefs['playlist'] != '':
+	if Prefs['playlist'] and Prefs['playlist'] != '':
 		LoadPlaylist(Dict['groups'], Dict['streams'])
 
 def PlaylistReloader():

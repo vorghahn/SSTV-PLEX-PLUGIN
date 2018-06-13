@@ -24,6 +24,7 @@ def LoadPlaylist(groups = {},streams = {}):
 	m3u_files = Prefs['playlist'].split(';')
 
 	for m3u_file in m3u_files:
+		Log.Info("Starting process for %s." % m3u_file)
 		LoadM3UFile(m3u_file, groups, streams)
 
 	Dict['groups'] = groups

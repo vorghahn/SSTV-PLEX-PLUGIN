@@ -138,8 +138,11 @@ def VideoMainMenu():
 	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
 		return SimpleStreamsNoEPG()
 
-	SmoothUtils.PlaylistReloader()
-	SmoothUtils.GuideReloader()
+	if not Dict['last_playlist_load_datetime']:
+		SmoothUtils.PlaylistReload()
+	if not Dict['last_guide_load_datetime']:
+		SmoothUtils.GuideReload()
+
 	Thread(target=SmoothUtils.PlaylistReloader).start()
 	Thread(target=SmoothUtils.GuideReloader).start()
 

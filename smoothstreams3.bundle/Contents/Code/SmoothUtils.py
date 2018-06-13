@@ -380,7 +380,7 @@ def build_channel_map():
 	streams = {}
 	thumb = "http://speed.guide.smoothstreams.tv/assets/images/channels/{0}.png"
 	group_title=u'SSTV'
-	Log.Info("Loading channel list")
+	Log.Info("Starting process for SSTV.")
 
 	try:
 		Log.Info("Fogs channel list succeded.")
@@ -603,7 +603,7 @@ def LoadXMLTV():
 					}
 					guide.setdefault(channel, {})[count] = item
 
-
+	Log.Info("Starting process for SSTV EPG.")
 	if Prefs['sportsOnly']:
 		try:
 			Log.Info("Sports EPG passed.")
@@ -644,6 +644,7 @@ def LoadXMLTV():
 		xmltv_files = Prefs['xmltv'].split(';')
 
 		for xmltv_file in xmltv_files:
+			Log.Info("Starting process for %s." % xmltv_file)
 			process_xmltv(xmltv_file)
 
 	Dict['genres'] = genres
@@ -679,6 +680,7 @@ def GuideReload():
 
 def GuideReloader():
 	while True:
+		time.sleep(300)
 		if not Dict['last_guide_load_datetime']:
 			GuideReload()
 		else:
@@ -688,15 +690,18 @@ def GuideReloader():
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_guide_load_datetime']:
 				GuideReload()
-		time.sleep(300)
+
 
 def PlaylistReload():
 	build_channel_map()
-	if Prefs['playlist'] and Prefs['playlist'] != '':
+	try:
 		LoadPlaylist(Dict['groups'], Dict['streams'])
+	except:
+		Log.Info('No other playlists provided.')
 
 def PlaylistReloader():
 	while True:
+		time.sleep(300)
 		if not Dict['last_playlist_load_datetime']:
 			PlaylistReload()
 		else:
@@ -706,4 +711,4 @@ def PlaylistReloader():
 			target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
 			if current_datetime > target_utc_datetime and target_utc_datetime > Dict['last_playlist_load_datetime']:
 				PlaylistReload()
-		time.sleep(300)
+

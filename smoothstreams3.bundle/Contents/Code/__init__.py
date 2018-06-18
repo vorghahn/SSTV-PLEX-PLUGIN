@@ -6,6 +6,7 @@
 #
 ###################################################################################################
 import sys
+import os
 import SmoothUtils
 import SmoothAuth
 import time
@@ -23,11 +24,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.46
+PLUGIN_VERSION = 0.47
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.47 - Autoupdate playlist fix
 # 0.46 - Change thread.sleep to time.sleep, 5 min between relaod checks
 # 0.45 - Force playlist reload on start
 # 0.44 - Bugfix
@@ -138,9 +140,9 @@ def VideoMainMenu():
 	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
 		return SimpleStreamsNoEPG()
 
-	if not Dict['last_playlist_load_datetime']:
+	Log.Info(Dict['last_playlist_load_datetime'])
+	if SmoothUtils.update_required(Dict['last_playlist_load_datetime']):
 		SmoothUtils.PlaylistReload()
-	if not Dict['last_guide_load_datetime']:
 		SmoothUtils.GuideReload()
 
 	Thread(target=SmoothUtils.PlaylistReloader).start()
@@ -1187,22 +1189,37 @@ def formatShowText(channel, show, currentTime, formatString):
 	return retVal.replace("()", "").replace("  ", " ").strip()
 
 def getLatestVersion():
+	processLatestVersion()
 	try:
 		global PLUGIN_VERSION
 		global PLUGIN_VERSION_LATEST
-		vers_url = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents/Resources/version.txt"
+		vers_url = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents/version.txt"
 		# Disable version checking against original project.
 		PLUGIN_VERSION_LATEST = float(JSON.ObjectFromURL(vers_url, encoding = 'utf-8')['Version'])
 
 		if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 			Log.Info("OUT OF DATE " + str(PLUGIN_VERSION) + " < " + str(PLUGIN_VERSION_LATEST))
+			processLatestVersion()
 		else:
 			Log.Info("UP TO DATE " + str(PLUGIN_VERSION) + " >= " + str(PLUGIN_VERSION_LATEST))
 	except:
 		Log.Info("Version check failed")
 		pass
 
-#def processLatestVersion(response):
+def processLatestVersion():
+	Log.Info("Updating Plugin")
+	cwd = os.getcwd()
+	pluginPath = os.path.abspath(os.path.join(cwd, "../../..", "Plug-ins","smoothstreams3.bundle","Contents"))
+	gitPath = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents"
+	for root, dirs, files in os.walk(pluginPath, topdown=False):
+		for name in dirs:
+			Log.Info(os.path.join(root, name))
+			Log.Info(os.path.join(gitPath, name))
+			for rootF, dirsF, filesF in os.walk(os.path.join(root, name), topdown=False):
+				for nameF in filesF:
+					Log.Info(os.path.join(rootF, nameF))
+					Log.Info(os.path.join(gitPath, name, nameF))
+
 
 ####################################################################################################
 @route(PREFIX + '/reloadplaylist')

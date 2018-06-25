@@ -6,7 +6,7 @@
 #
 ###################################################################################################
 import sys
-import os
+import os, urllib, zipfile, shutil
 import SmoothUtils
 import SmoothAuth
 import time
@@ -16,6 +16,7 @@ import copy
 import platform
 from locale_patch import L, SetAvailableLanguages
 from threading import Thread
+import requests
 
 Smoothstreams_URL = 'http://www.Smoothstreams.com'
 Smoothstreams_URL1 = 'http://a.video.Smoothstreams.com/'
@@ -24,11 +25,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.47
+PLUGIN_VERSION = 0.5
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.5 - Autoupdate of plugin and bug fixes
 # 0.47 - Autoupdate playlist fix
 # 0.46 - Change thread.sleep to time.sleep, 5 min between relaod checks
 # 0.45 - Force playlist reload on start
@@ -134,7 +136,6 @@ def VideoMainMenu():
 		updateAvailable = ""
 	sourceType()
 	SmoothUtils.GetServerUrlByName(Prefs["serverLocation"])
-
 	if Prefs['simple'] == 'Test':
 		return test()
 	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
@@ -783,7 +784,7 @@ def SearchListItems(group = unicode('All'), query = ''):
 						new_chan['time'] = program['start']
 						new_chan['usertime'] = program['start'].strftime('%H:%M')
 						if time_filtered_list.index(program) == 0:
-							new_chan['title'] = 'NOW ' +  program['title']
+							new_chan['title'] = 'NOW ' +  program['title'] +  program['title'] + ' (' + channel['id'] + ')'
 							now.append(new_chan)
 							# Log.Info("Now")
 							# Log.Info(title)
@@ -792,7 +793,7 @@ def SearchListItems(group = unicode('All'), query = ''):
 							# Log.Info(genre)
 						elif time_filtered_list.index(program) == 1:
 							# Log.Info("Next")
-							new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' ' + program['title']
+							new_chan['title'] = 'NEXT ' + new_chan['usertime'] + ' (' + channel['id'] + ')'
 							now.append(new_chan)
 							# Log.Info(title)
 							# Log.Info(new_chan['title'])
@@ -805,7 +806,7 @@ def SearchListItems(group = unicode('All'), query = ''):
 								when = "LATER"
 							else:
 								when = calendar.day_name[program['start'].weekday()][:3].upper()
-							new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title']
+							new_chan['title'] = when + " " + new_chan['usertime'] + ' ' + program['title'] + ' (' + channel['id'] + ')'
 							now.append(new_chan)
 							# Log.Info(title)
 							# Log.Info(new_chan['title'])
@@ -1189,7 +1190,7 @@ def formatShowText(channel, show, currentTime, formatString):
 	return retVal.replace("()", "").replace("  ", " ").strip()
 
 def getLatestVersion():
-	processLatestVersion()
+	Log.Info("Checking plugin version is up to date %s" % str(PLUGIN_VERSION))
 	try:
 		global PLUGIN_VERSION
 		global PLUGIN_VERSION_LATEST
@@ -1206,19 +1207,37 @@ def getLatestVersion():
 		Log.Info("Version check failed")
 		pass
 
+
+def copytree(src, dst, symlinks=False, ignore=["Info.plist","DefaultPrefs.json"]):
+	if not os.path.exists(dst):
+		os.makedirs(dst)
+	for item in os.listdir(src):
+		s = os.path.join(src, item)
+		d = os.path.join(dst, item)
+		if os.path.isdir(s):
+			copytree(s, d, symlinks, ignore=ignore)
+		else:
+			if not os.path.exists(d) or os.stat(s).st_mtime - os.stat(d).st_mtime > 1:
+				shutil.copy2(s, d)
+
 def processLatestVersion():
 	Log.Info("Updating Plugin")
 	cwd = os.getcwd()
-	pluginPath = os.path.abspath(os.path.join(cwd, "../../..", "Plug-ins","smoothstreams3.bundle","Contents"))
-	gitPath = "https://raw.githubusercontent.com/vorghahn/SSTV-PLEX-PLUGIN/master/smoothstreams3.bundle/Contents"
-	for root, dirs, files in os.walk(pluginPath, topdown=False):
-		for name in dirs:
-			Log.Info(os.path.join(root, name))
-			Log.Info(os.path.join(gitPath, name))
-			for rootF, dirsF, filesF in os.walk(os.path.join(root, name), topdown=False):
-				for nameF in filesF:
-					Log.Info(os.path.join(rootF, nameF))
-					Log.Info(os.path.join(gitPath, name, nameF))
+	pluginPath = os.path.abspath(os.path.join(cwd, "../../..", "Plug-ins","smoothstreams3.bundle"))
+	testPath = os.path.abspath(os.path.join(pluginPath,"TEST_Contents"))
+	tempPath = os.path.abspath(os.path.join(pluginPath,"temp"))
+	zipped = "https://github.com/vorghahn/SSTV-PLEX-PLUGIN/archive/master.zip"
+	update_zip = os.path.join(pluginPath, "update.zip")
+	urllib.urlretrieve(zipped, update_zip)
+
+	with zipfile.ZipFile(update_zip, "r") as z:
+		z.extractall(tempPath)
+
+	copytree(os.path.join(tempPath, "SSTV-PLEX-PLUGIN-master", "smoothstreams3.bundle", "Contents"), os.path.join(pluginPath,"Contents"))
+	shutil.rmtree(tempPath, ignore_errors=True)
+	os.remove(os.path.join(pluginPath, "update.zip"))
+
+
 
 
 ####################################################################################################

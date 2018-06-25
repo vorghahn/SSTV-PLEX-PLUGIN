@@ -684,9 +684,7 @@ def GuideReload():
 def GuideReloader():
 	while True:
 		time.sleep(300)
-		if not Dict['last_guide_load_datetime']:
-			GuideReload()
-		elif update_required(Dict['last_guide_load_datetime']):
+		if update_required(Dict['last_guide_load_datetime']):
 			GuideReload()
 
 
@@ -700,18 +698,19 @@ def PlaylistReload():
 def PlaylistReloader():
 	while True:
 		time.sleep(300)
-		if not Dict['last_playlist_load_datetime']:
-			PlaylistReload()
-		elif update_required(Dict['last_playlist_load_datetime']):
+		if update_required(Dict['last_playlist_load_datetime']):
 			PlaylistReload()
 
 def update_required(input_time):
-	current_datetime = datetime.datetime.utcnow()
-	cur_utc_hr = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0).hour
-	target_utc_hr = (cur_utc_hr // 4) * 4
-	target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
-	Log.Info('Seeing if playlist update is required, latest update was %s and current time is %s' % (input_time, current_datetime))
-	if current_datetime > target_utc_datetime and target_utc_datetime > input_time:
+	try:
+		current_datetime = datetime.datetime.utcnow()
+		cur_utc_hr = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0).hour
+		target_utc_hr = (cur_utc_hr // 4) * 4
+		target_utc_datetime = datetime.datetime.utcnow().replace(microsecond=0, second=0, minute=0, hour=target_utc_hr)
+		Log.Info('Seeing if playlist update is required, latest update was %s and current time is %s' % (input_time, current_datetime))
+		if current_datetime > target_utc_datetime and target_utc_datetime > input_time:
+			return True
+		else:
+			return False
+	except:
 		return True
-	else:
-		return False

@@ -22,6 +22,7 @@ Useful for faultfinding or for a simpler interface.
 - No: Normal mode
 - Yes: Channels only mode
 - Yes (no EPG): Channels only mode with zero epg data
+- Test: Has 6 different methods for launching channel 1 to help identify client issues.
 
 ### My Search
 This is an area where you can setup custom entries for the plugin's home page. This will do a search based on the terms. You can use any strings to match the title, description or category in the guide. Items are separated by a semicolon (;) so that you can make multiple entries.
@@ -35,13 +36,8 @@ Would make six entries.
 
 - All shows in the NHL category and any other shows with the term 'NHL' in the title or description. This will get a custom title of 'LiveNHL'
 - All shows in the NFL category and shows with the term 'NFL' in the title or description
-- All shows in the Movies category that start in the next 90 minutes
-- All shows that are currently on with the best quality of each show available
 - All shows matching the words: NFL NHL NBA and Baseball with a custom title of 'US Sports'
 - All shows matching the exact string "New Jersey Devils". This will get a custom title of 'Devils'
-
-### Stream Quality Preference
-NOW INACTIVE        (Filter shows by SD, HD or allow both. Note: The channels of the 'blocked' streams are still usable but they are just obscured in the EPG.)
 
 ### HLS or RTMP
 Selection of video stream type. HLS is smoother but has a 15 sec delay compared to RTMP. If your client is only able to accept one type then you can enter it into the lists below. For a list of the correct terms to use refer client-platform in: https://forums.plex.tv/discussion/190573/list-of-current-client-product-and-client-platform
@@ -57,7 +53,7 @@ Set to 60 as currently only 60 channels respond to the above stream quality sele
 - Off: Use the extended guide (thanks fog) which shows content for all channels. This will make the plugin slower because of the larger guide information.
 
 ## Updates
-Download the latest release here: https://bitbucket.org/vorghahn/sstv-plex-plugin/get/master.zip
+From version 0.5 the plugin will autoupdate, if this happens you may notice the plugin being slow or refreshing.
 
 ## Uninstall
 - Delete the smoothstreams2.bundle folder from your plugins folder location - https://support.plex.tv/hc/en-us/articles/201106098-How-do-I-find-thePlug-Ins-folder-

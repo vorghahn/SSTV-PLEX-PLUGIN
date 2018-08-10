@@ -34,6 +34,7 @@ def login():
 				pword = Prefs['password']
 				if uname != '':
 					params = {"username": uname, "password": pword, "site": service}
+					result = {}
 					try:
 						url = url + urllib.urlencode(params)
 						session = requests.Session()
@@ -53,7 +54,7 @@ def login():
 					except Exception as e:
 						Log.Error("Error getting login result: " + repr(e))
 
-					if result is None:
+					if result == {}:
 						Log.Error("No result")
 						return MessageContainer("Error", "Network error logging in")
 					elif "error" in result:

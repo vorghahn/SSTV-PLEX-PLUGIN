@@ -24,6 +24,8 @@ GUIDE_CACHE_MINUTES = 10
 
 sports_list = ["martial sports",'nba','sports','motorsport','americanfootball',"nfl","national football league",'ice hockey',"nhl","national hockey league",'nascar',"hockey","college football","cfb","ncaaf","rugby","fifa","uefa","epl","soccer","premier league","bundesliga","football","nba","wnba","mlb","baseball","pga",'golf',"ufc",'fight',"boxing","mma","wwe","wrestling","curling","darts","snooker","tennis/squash","cricket","basketball"]
 
+def SportsList():
+	return  sports_list
 
 def fix_text(text):
 	def fixup(m):
@@ -45,47 +47,6 @@ def fix_text(text):
 				pass
 		return text # leave as is
 	return re.sub("&#?\w+;", fixup, text)
-#
-# def getCurrentTimeNative():
-# 	return datetime.datetime.now(tzlocal())
-#
-
-# def GetDateTimeNative(strTime):
-# 	try:
-# 		parser = dateutil.parser()
-# 		is_dst = time.daylight and time.localtime().tm_isdst > 0
-# 		utc_offset = - (time.altzone if is_dst else time.timezone)
-# 		return (parser.parse(strTime) - datetime.timedelta(hours=Dict['ScheduleUtcOffset'])).replace(tzinfo=dateutil.tz.tzutc()).astimezone(dateutil.tz.tzlocal())
-# 	except:
-# 		Log.Error("GetDateTimeNative " + strTime)
-
-# def IsDST():
-# 	dt = datetime.datetime.utcnow()
-# 	if dt.year < 2007:
-# 		raise ValueError()
-# 	dst_start = datetime.datetime(dt.year, 3, 8, 2, 0)
-# 	dst_start += datetime.timedelta(6 - dst_start.weekday())
-# 	dst_end = datetime.datetime(dt.year, 11, 1, 2, 0)
-# 	dst_end += datetime.timedelta(6 - dst_end.weekday())
-# 	return dst_start <= dt < dst_end
-#
-# def IsScheduleInDst():
-# 	#In the northern parts of the time zone, during the second Sunday in March, at 2:00 a.m. EST, clocks are advanced to 3:00 a.m. EDT
-# 	# leaving a one hour "gap". During the first Sunday in November, at 2:00 a.m. EDT, clocks are moved back to 1:00 a.m. EST, thus "duplicating" one hour.
-# 	Log.Error("not yet implemented, don't call this")
-# 	return 0
-#
-# def GetDstEnd():
-# 	nowdate = datetime.datetime.now()
-# 	novFirstDate = datetime.date(nowdate.year, nowdate.month, 1)
-# 	delta = (6 - novFirstDate.weekday())
-# 	return datetime.datetime(nowdate.year, nowdate.month, delta,2,0,0,0)
-#
-# def GetDstStart():
-# 	nowdate = datetime.datetime.now()
-# 	marDate = datetime.date(nowdate.year, 11, 1)
-# 	delta = (13 - marDate.weekday())
-# 	return datetime.datetime(nowdate.year, nowdate.month, delta,2,0,0,0)
 
 def GetServerUrlByName(serverLocation=None):
 	if Prefs["customServer"] is not None and len(Prefs['customServer']) > 0 and ":" in Prefs['customServer'] > 0:
@@ -312,11 +273,6 @@ def GetFullUrlFromChannelNumber(channelNum):
 		quality = 1
 	if int(channelNum) > int(Prefs['numQuality']):
 		quality = 1
-	# Log.Info(rtmp_template.format(Dict['source'],Dict['server'],Dict['port'],Dict['service'],'%02d' % int(channelNum), quality, Dict['sourceext'], Dict['SPassW']))
-	# if Dict['source'] == 'lol':
-	# 	return rtmp_template.format(Dict['source'], Dict['server'], Dict['port'], Dict['service'],
-	# 							   '%02d' % int(channelNum), quality, Dict['SPassW'])
-	# else:
 	return url_template.format(Dict['source'],Dict['server'],Dict['port'],Dict['service'],'%02d' % int(channelNum), quality, Dict['sourceext'], Dict['SPassW'])
 
 

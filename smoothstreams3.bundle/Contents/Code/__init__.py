@@ -130,17 +130,14 @@ def ValidatePrefs():
 def VideoMainMenu():
 	Log.Info(str(PLUGIN_VERSION) + ' VideoMainMenu called: ')
 	oc = ObjectContainer()
-
+	loginResult = SmoothAuth.login()
 	if PLUGIN_VERSION_LATEST > PLUGIN_VERSION:
 		updateAvailable = " - plugin update available"
 	else:
 		updateAvailable = ""
 	sourceType()
 	SmoothUtils.GetServerUrlByName(Prefs["serverLocation"])
-	if Prefs['simple'] == 'Test':
-		return test()
-	elif Prefs['simple'] == 'SimpleStreams (No EPG)':
-		return SimpleStreamsNoEPG()
+
 
 	Log.Info(Dict['last_playlist_load_datetime'])
 	if SmoothUtils.update_required(Dict['last_playlist_load_datetime']):
@@ -149,16 +146,21 @@ def VideoMainMenu():
 
 	Thread(target=SmoothUtils.PlaylistReloader).start()
 	Thread(target=SmoothUtils.GuideReloader).start()
+	if Dict['SPassW'] is None or Prefs['serverLocation'] is None or Prefs['username'] is None or Prefs[
+		'service'] is None:
+		Log.Info('No password yet')
+		ObjectContainer.title1 = NAME + updateAvailable + ' - Enter Login Details and Server Preferences then Refresh ->'
+		oc.add(PrefsObject(title="Preferences", thumb=R("icon-prefs.png")))
 
 
-	if Prefs['simple'] == 'SimpleStreams':
-		ObjectContainer.title1 = NAME + updateAvailable
-		return ListItems()
 	else:
-		if Dict['SPassW'] is None or Prefs['serverLocation'] is None or Prefs['username'] is None or Prefs['service'] is None:
-			Log.Info('No password yet')
-			ObjectContainer.title1 = NAME + updateAvailable + ' - Enter Login Details and Server Preferences then Refresh ->'
-			oc.add(PrefsObject(title = "Preferences", thumb = R("icon-prefs.png")))
+		if Prefs['simple'] == 'Test':
+			return test()
+		elif Prefs['simple'] == 'SimpleStreams (No EPG)':
+			return SimpleStreamsNoEPG()
+		elif Prefs['simple'] == 'SimpleStreams':
+			ObjectContainer.title1 = NAME + updateAvailable
+			return ListItems()
 		else:
 			ObjectContainer.title1 = NAME + updateAvailable
 

@@ -25,11 +25,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.51
+PLUGIN_VERSION = 0.52
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.52 - Chyannel loading fixes
 # 0.51 - Tidying
 # 0.5 - Autoupdate of plugin and bug fixes
 # 0.47 - Autoupdate playlist fix
@@ -723,10 +724,20 @@ def ListItems(group = unicode('All'), query = '', page = 1):
 				c_video_codec = item['video_codec'] if item['video_codec'] else None,
 				c_container = item['container'] if item['container'] else None,
 				c_protocol = item['protocol'] if item['protocol'] else None,
-				optimized_for_streaming = item['optimized_for_streaming'] in ['y', 'yes', 't', 'true', 'on', '1'] if item['optimized_for_streaming'] else 'No',
+				optimized_for_streaming = True,
 				include_container = False
 			)
 		)
+
+		# oc.add(
+		# 	CreateVideoClipObject(
+		# 		url=SmoothUtils.GetFullUrlFromChannelNumber(channelNum),
+		# 		title="Channel %s" % str(channelNum),
+		# 		thumb='https://guide.smoothstreams.tv/assets/images/channels/150.png',
+		# 		optimized_for_streaming=True,
+		# 		include_container=False #True before though...
+		# 	)
+		# )
 
 	if len(items_list) > page * items_per_page:
 		oc.add(

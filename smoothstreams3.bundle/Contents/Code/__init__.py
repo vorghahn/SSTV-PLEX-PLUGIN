@@ -154,15 +154,15 @@ def VideoMainMenu():
 
 
 	else:
+		ObjectContainer.title1 = NAME + updateAvailable
 		if Prefs['simple'] == 'Test':
 			return test()
 		elif Prefs['simple'] == 'SimpleStreams (No EPG)':
 			return SimpleStreamsNoEPG()
 		elif Prefs['simple'] == 'SimpleStreams':
-			ObjectContainer.title1 = NAME + updateAvailable
 			return ListItems()
 		else:
-			ObjectContainer.title1 = NAME + updateAvailable
+
 
 			if not Dict['groups']:
 				ReloadPlaylist()

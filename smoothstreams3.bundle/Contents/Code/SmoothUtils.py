@@ -424,8 +424,8 @@ def LoadXMLTV():
 	genres = {}
 	genres['sports']  = []
 	genres['all'] = []
-	full_xmltv = 'https://fast-guide.smoothstreams.tv/altepg/xmltv3.xml.gz'
-	fallback = 'https://fast-guide.smoothstreams.tv/altepg/xmltv1.xml.gz'
+	full_xmltv = 'https://fast-guide.smoothstreams.tv/altepg/xmltv1.xml.gz'
+	fallback = 'https://fast-guide.smoothstreams.tv/altepg/xmltv2.xml.gz'
 	fallback1 = 'http://ca.epgrepo.download/xmltv1.xml'
 	fallback2 = 'http://eu.epgrepo.download/xmltv1.xml'
 	sports_xmltv = 'https://fast-guide.smoothstreams.tv/feed.xml'

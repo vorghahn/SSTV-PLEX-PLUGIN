@@ -25,11 +25,12 @@ BASE_URL = 'http://www.Smoothstreams.com/videos'
 VIDEO_PREFIX = ''
 NAME = 'SmoothStreamsTV'
 PREFIX = '/video/' + NAME.replace(" ", "+") + 'videos'
-PLUGIN_VERSION = 0.52
+PLUGIN_VERSION = 0.53
 PLUGIN_VERSION_LATEST = 0.1
 source = ''
 
 # Changelist
+# 0.53 - Changed epg data to 1 day to reduce time
 # 0.52 - Chyannel loading fixes
 # 0.51 - Tidying
 # 0.5 - Autoupdate of plugin and bug fixes

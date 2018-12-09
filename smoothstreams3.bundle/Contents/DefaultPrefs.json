@@ -37,7 +37,7 @@
 		"type": "enum",
 		"label": "Menu Style",
 		"values": ["Full","SimpleStreams","SimpleStreams (No EPG)","Test"],
-		"default": "Full"
+		"default": "SimpleStreams (No EPG)"
 	},
 	{
 		"id": "mySearch",
